@@ -1,80 +1,66 @@
 package cua.li.ti;
 
-import javafx.geometry.VPos;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import javafx.scene.layout.LayoutInfo;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Math;
 
 import cua.li.ti.clocks.SpiralClock;
-import cua.li.ti.scene.layout.Dock;
 import cua.li.ti.scene.gadget.HexagonalColorPicker;
+import cua.li.ti.scene.layout.Dock;
 import cua.li.ti.scene.layout.ShiftingStack;
-import javafx.scene.Scene;
 
 /**
- * @author Alain
+ * @author A@cua.li
  */
 public class Demo {
-    var clock :SpiralClock;
+    def RADIUS = 230;
+    def CLOCK = SpiralClock {
+        size: 300
+        translateX: ( Math.sqrt(2) * Math.sqrt(3) * RADIUS - 300 ) / 4
+        translateY: 50
+    };
     def dock = Dock {
-        sides: 2
+        sides: 1
         layoutInfo: LayoutInfo {
             height: 400
-            width: 1000
+            width: 1200
         }
-        nodeVPos: VPos.CENTER
         content: [
             ShiftingStack {
                 content: [
-                    clock = SpiralClock {
-                        size: 400
+                    Rectangle {
+                        height: 400
+                        width: Math.sqrt(3) * RADIUS
+                        strokeWidth: 3
+                        stroke: Color.DARKRED
+                        fill: Color.TRANSPARENT
                     }
+                    CLOCK
                 ]
             }
             HexagonalColorPicker {
-                centerX: 150
-                centerY: 200
-                radius: 220
-                onClose: function(color:Color,changed:Boolean):Void {
-                    if (changed) then clock.secondPaint = color
+                centerX: RADIUS
+                centerY: Math.sqrt(3) * RADIUS / 2
+                radius: RADIUS
+                onClose: function(color:Color,hasChanged:Boolean):Void {
+                    if (hasChanged) then CLOCK.selectedPaint = color
                 }
             }
         ]
         center: 1
     }
-
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:main
-    public-read def scene: javafx.scene.Scene = javafx.scene.Scene {
-        width: 480.0
-        height: 320.0
-        content: getDesignRootNodes ()
-    }
-    
-    public-read def currentState: org.netbeans.javafx.design.DesignState = org.netbeans.javafx.design.DesignState {
-    }
-    
-    public function getDesignRootNodes (): javafx.scene.Node[] {
-        [ ]
-    }
-    
-    public function getDesignScene (): javafx.scene.Scene {
-        scene
-    }
-    // </editor-fold>//GEN-END:main
-
 }
 
 function run (): Void {
-    var design = Demo {};
-
-    javafx.stage.Stage {
+    Stage {
         title: "Demo"
-        scene: //design.getDesignScene ()
-            Scene {
-                height: 400
-                width: 1000
-                content: [
-                    design.dock
-                ]
-            }
+        scene: Scene {
+            height: 400
+            width: 1200
+            content: [ Demo {}.dock ]
+        }
     }
 }

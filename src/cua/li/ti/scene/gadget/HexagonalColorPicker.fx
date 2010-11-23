@@ -14,15 +14,23 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.util.Math;
 
+def SQRT_3 = Math.sqrt(3);
+def HALF_SQRT_3 = SQRT_3 / 2;
+class ColorCell {
+    var shift :String;  // ftyhbv
+    var color :String;
+    var legend :String = 'W';  // 'B' or 'W'
+}
+
 /**
  * Based on original idea by Bob Stein (http://www.VisiBone.com)
- * @author Alain@cuali.com.br
+ * @author A@cua.li
  */
 public class HexagonalColorPicker extends CustomNode {
     /**
     * The onClose function attribute is executed when the
-    * the OK or Cancel button is pressed, passing the chosen color
-    * or original color, depending upon which button was pressed
+    * the center or the border is pressed, passing the chosen color
+    * or original color, depending upon which was pressed.
     */
     public var onClose: function(color:Color,changed:Boolean):Void;
     public-read var chosen :Paint;
@@ -48,9 +56,9 @@ public class HexagonalColorPicker extends CustomNode {
     var currentHexagon :RegularPolygon;
     function draw() :Void {
         def colorName = Text {
-            font: Font { name: "Consolas Bold" size: cellRadius * 0.8 }
+            font: Font { name: "Consolas Bold" size: cellRadius * 0.707 }
             wrappingWidth: cellRadius * 3.3
-            translateX: - cellRadius * 3.3 / 2
+            translateX: cellRadius * 3.3 / -2
             visible: false
         };
         this.children = [
@@ -65,6 +73,7 @@ public class HexagonalColorPicker extends CustomNode {
                 fill: Color.TRANSPARENT
                 blocksMouse: true
                 onMouseClicked: function (me :MouseEvent) :Void {
+                    colorName.visible = false;
                     this.managed = false;
                     this.visible = false;
                     onClose(original, false)
@@ -98,6 +107,8 @@ public class HexagonalColorPicker extends CustomNode {
                     delete centralHexagon.transforms
                 }
                 onMouseClicked: function (me :MouseEvent) :Void {
+                    centralLabel = '';
+                    colorName.visible = false;
                     this.visible = false;
                     onClose(chosen as Color, not chosen.equals(original))
                 }
@@ -153,14 +164,7 @@ public class HexagonalColorPicker extends CustomNode {
         -cellRadius * HALF_SQRT_3]/*v*/;
     def verticalShift = bind [0, -cellRadius*3/2, -cellRadius*3/2, 0, cellRadius*3/2, cellRadius*3/2];
 }
-def SQRT_3 = Math.sqrt(3);
-def HALF_SQRT_3 = SQRT_3 / 2;
-class ColorCell {
-    var shift :String;  // ftyhbv
-    var color :String;
-    var legend :String = 'W';  // 'B' or 'W'
-}
-// <editor-fold defaultstate="collapsed" desc="carefully ordered sequence of 255 color cells">
+//<editor-fold defaultstate="collapsed" desc="carefully ordered sequence of 255 color cells">
 def CELLS: ColorCell[] = [
     ColorCell {shift: 'h' color: "000000"}
     ColorCell {shift: 'v' color: "333333"}
@@ -379,4 +383,4 @@ def CELLS: ColorCell[] = [
     ColorCell {shift: 'h' color: "ff0066"}
     ColorCell {shift: 'h' color: "ff0099"}
 ];
-// </editor-fold>
+//</editor-fold>

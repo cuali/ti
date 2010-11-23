@@ -4,7 +4,7 @@ import javafx.scene.shape.Polygon;
 import javafx.util.Math;
 
 /**
- * @author Alain@cuali.com.br
+ * @author A@cua.li
  */
 public class RegularPolygon extends Polygon {
     public var centerX:Number;

@@ -3,7 +3,9 @@ package cua.li.ti.scene.layout;
 import javafx.scene.layout.Stack;
 
 /**
- * @author Alain@cuali.com.br
+ * In its current implementation this class assumes all content nodes are the same size.
+ * It does NOT honor the <code>nodeHPos</code> and <code>nodeVPos</code> attributes.
+ * @author A@cua.li
  */
 
 public class ShiftingStack extends Stack {

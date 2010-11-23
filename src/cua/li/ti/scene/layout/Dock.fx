@@ -13,7 +13,7 @@ def QUARTER_SQRT_2 = SQRT_2/4;
 def LATERAL = 3;    // take care of adding or removing perspectives and translations accordingly
 
 /**
- * @author Alain@cuali.com.br
+ * @author A@cua.li
  */
 public class Dock extends HBox {
     override var blocksMouse = true;
@@ -32,6 +32,7 @@ public class Dock extends HBox {
     def pyb2 = bind preferredHeight * (1 + HALF_SQRT_2) / 2;
     def pyb3 = bind preferredHeight * (1 + 0.5) / 2;
     def pyb4 = bind preferredHeight * (1 + QUARTER_SQRT_2) / 2;
+    // <editor-fold defaultstate="collapsed" desc="carefully ordered sequence of perspective transforms">
     def perspectives: PerspectiveTransform[] = [
         PerspectiveTransform {
             ulx: 0
@@ -104,6 +105,7 @@ public class Dock extends HBox {
             lly: bind pyb3
         }
     ];
+    // </editor-fold>
     def translations: Translate[] = [
         Translate { x: bind pxl4 }
         Translate { x: bind pxl3 }
