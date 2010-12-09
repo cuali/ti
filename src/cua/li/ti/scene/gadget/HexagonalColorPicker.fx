@@ -32,7 +32,7 @@ public class HexagonalColorPicker extends CustomNode {
     * the center or the border is pressed, passing the chosen color
     * or original color, depending upon which was pressed.
     */
-    public var onClose: function(color:Color,changed:Boolean):Void;
+    public var onClose: function(color:Color,hasChanged:Boolean):Void;
     public-read var chosen :Paint;
     public var original = Color.TRANSPARENT;
     public-init var centerX :Number = 50;
