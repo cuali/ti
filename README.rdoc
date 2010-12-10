@@ -1,0 +1,4 @@
+Este repositório está dedicado para compartilhar componentes de "*Tecnologias* *da* *Inteligência*" (_Technologies_ _de_ _l_'_Intelligence_) desenvolvidos para nossas aplicações.
+
+[componentes Visage] para uma interface gráfica mais orientada à manipulação direta
+[componentes Java] para dar suporte aos componentes gráficos
