@@ -35,7 +35,8 @@ public class ZipFile {
 		this.addDirectory(path, file, false);
 	}
 
-	public void addDirectory(final String path, final File file, final boolean recursively) throws IOException {
+	public void addDirectory(final String path, final File file, final boolean recursively) throws FileNotFoundException,
+			IOException {
 		// get a listing of the directory content
 		final String[] list = file.list();
 		for (final String filename : list) {

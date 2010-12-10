@@ -3,14 +3,14 @@ package cua.li.ti.util.zip;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.zip.ZipException;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 public class ZipFileTest {
 	private File file;
