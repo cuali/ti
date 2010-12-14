@@ -14,17 +14,27 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.util.Math;
 
+// working with hexagons mainly involves 3/2, sqrt(3) and sqrt(3)/2
 def SQRT_3 = Math.sqrt(3);
 def HALF_SQRT_3 = SQRT_3 / 2;
+def HALF_3 = 1.5; // 3.0 / 2.0
+
+/**
+ * Data Transfer Object describing an hexagonal cell in the resulting hexagonal layout.
+ */
 class ColorCell {
+    /** The direction this cell stands, relative to the previous one. */
     var shift :String;  // ftyhbv
+    /** The color of the cell, expressed as a Web-color code. */
     var color :String;
+    /** Whether the color code should be written <code>W</code>hite or <code>B</code>lack. */
     var legend :String = 'W';  // 'B' or 'W'
 }
 
 /**
- * Based on original idea by Bob Stein (http://www.VisiBone.com)
+ * Based on original layout by Bob Stein, Stein@VisiBone.com.
  * @author A@cua.li
+ * @see <a href="http://www.VisiBone.com/color/">VisiBone Web Design Color References</a>
  */
 public class HexagonalColorPicker extends CustomNode {
     /**
@@ -33,13 +43,21 @@ public class HexagonalColorPicker extends CustomNode {
     * or original color, depending upon which was pressed.
     */
     public var onClose: function(color:Color,hasChanged:Boolean):Void;
+    /** The chosen color when calling the <code>onClose</code> function. */
     public-read var chosen :Paint;
+    /** The original color is set before setting the <code>visible</code> attribute to true. */
     public var original = Color.TRANSPARENT;
     public-init var centerX :Number = 50;
     public-init var centerY :Number = 120;
+    /** The radius may be changed after initialization at the cost of a global recomputation of polygons' vertices. */
     public-init var radius :Number = 100;
-    def cellRadius = bind radius * 3 / (26*SQRT_3);
+    /** There are 8 complete cells on each side of the center cell, plus a "sufficient" border. */
+    def cellRadius = bind radius * SQRT_3 / 26; // 27 would leave a border equivalent to one complete cell
     override var managed = true;
+    /** 
+     * The application has to set this attribute to <code>true</true> 
+     * <b>after</b> setting the <code>original</code> color. 
+     */
     override var visible = false on replace {
         if (visible) {
             managed = false;
@@ -54,11 +72,15 @@ public class HexagonalColorPicker extends CustomNode {
     var centralPaint :Paint;
     var centralHexagon :RegularPolygon;
     var currentHexagon :RegularPolygon;
+    /**
+     * Defines the nodes in the <code>children</code> sequence. 
+     * The current strategy for creating the nodes does not allow for translating after initialization.
+     */
     function draw() :Void {
         def colorName = Text {
-            font: Font { name: "Consolas Bold" size: cellRadius * 0.707 }
-            wrappingWidth: cellRadius * 3.3
-            translateX: cellRadius * 3.3 / -2
+            font: bind Font { name: "Consolas Bold" size: cellRadius * 0.707 }
+            wrappingWidth: bind cellRadius * 3.3
+            translateX: bind cellRadius * 3.3 / -2
             visible: false
         };
         this.children = [
@@ -87,7 +109,7 @@ public class HexagonalColorPicker extends CustomNode {
             currentHexagon = centralHexagon = RegularPolygon {
                 centerX: centerX + relPosX
                 centerY: centerY + relPosY
-                radius: cellRadius
+                radius: bind cellRadius
                 strokeWidth: 0
                 stroke: Color.TRANSPARENT
                 fill: bind chosen with inverse
@@ -124,7 +146,7 @@ public class HexagonalColorPicker extends CustomNode {
                 RegularPolygon {
                     centerX: centerX + relPosX
                     centerY: centerY + relPosY
-                    radius: cellRadius
+                    radius: bind cellRadius
                     strokeWidth: 0
                     stroke: Color.TRANSPARENT
                     fill: Color.web(cellColor)
@@ -156,15 +178,21 @@ public class HexagonalColorPicker extends CustomNode {
         }
     }
     def horizontalShift = bind [
-        -cellRadius * SQRT_3/*f*/,
-        -cellRadius * HALF_SQRT_3/*t*/,
-        cellRadius * HALF_SQRT_3/*y*/,
-        cellRadius * SQRT_3/*h*/,
-        cellRadius * HALF_SQRT_3/*b*/,
-        -cellRadius * HALF_SQRT_3]/*v*/;
-    def verticalShift = bind [0, -cellRadius*3/2, -cellRadius*3/2, 0, cellRadius*3/2, cellRadius*3/2];
+        /*f*/-cellRadius * SQRT_3,
+        /*t*/-cellRadius * HALF_SQRT_3,
+        /*y*/cellRadius * HALF_SQRT_3,
+        /*h*/cellRadius * SQRT_3,
+        /*b*/cellRadius * HALF_SQRT_3,
+        /*v*/-cellRadius * HALF_SQRT_3];
+    def verticalShift = bind [
+		/*f*/0, 
+		/*t*/-cellRadius * HALF_3, 
+		/*y*/-cellRadius * HALF_3, 
+		/*h*/0, 
+		/*b*/cellRadius * HALF_3, 
+		/*v*/cellRadius * HALF_3];
 }
-//<editor-fold defaultstate="collapsed" desc="carefully ordered sequence of 255 color cells">
+//<editor-fold defaultstate="collapsed" desc="carefully ordered sequence of 216 color cells">
 def CELLS: ColorCell[] = [
     ColorCell {shift: 'h' color: "000000"}
     ColorCell {shift: 'v' color: "333333"}
