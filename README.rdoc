@@ -1,8 +1,24 @@
-﻿Este repositório está dedicado para compartilhar componentes de *TI* (Tecnologias da Inteligência ou _Technologies_ _de_ _l_'_Intelligence_) desenvolvidos para nossas aplicações.
+﻿= TI
+Este repositório está dedicado para compartilhar componentes de *TI* (<b>Tecnologias da Inteligência</b> ou <i>Technologies de l'Intelligence</i>) desenvolvidos para nossas aplicações.
 
-[componentes Visage] para uma interface gráfica mais orientada à manipulação direta
-  * escolher uma cor em células hexagonais organizadas por nuances
-  * empilhar vários nós gráficos com um pequeno deslize de cada um
+== componentes existentes
+
+[componentes Visage (ex-<tt>JavaFX</tt>)]
+  para uma interface gráfica mais orientada à manipulação direta
+  * escolher uma cor de 216 em células hexagonais organizadas por nuances
+    (inspirado em VisiBone[http://www.VisiBone.com/color/hexagon.html] de Bob Stein)
   * organizar uma sequência de nós gráficos em uma tira quase 3D
-[componentes Java] para dar suporte aos componentes gráficos
+  * empilhar vários nós gráficos com um pequeno deslize de cada um
+  * relógio com possibilidade de escolher ao vivo a cor das pontas
+[componentes Java]
+  para dar suporte aos componentes gráficos
   * empacotar uma pasta ou um arquivo dentro de um arquivo ZIP
+
+== componentes planejados
+
+[componentes Visage (ex-<tt>JavaFX</tt>)]
+  esperando por um patrocinador
+  * escolher uma cor de 1068 em células triangulares organizadas por nuances
+    (inspirado em VisiBone[http://www.VisiBone.com/color/kilochart.html] de Bob Stein)
+  * escolher uma fonte numa tabela inspirada na tabela periódica dos elementos
+    (inspirado em Periodic_Table_of_Typefaces[http://www.squidspot.com/Periodic_Table_of_Typefaces.html] de Camdon Wilde)
