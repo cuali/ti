@@ -1,0 +1,8 @@
+﻿Este repositório está dedicado para compartilhar componentes de *TI* (Tecnologias da Inteligência ou _Technologies_ _de_ _l_'_Intelligence_) desenvolvidos para nossas aplicações.
+
+[componentes Visage] para uma interface gráfica mais orientada à manipulação direta
+* escolher uma cor em células hexagonais organizadas por nuances
+* empilhar vários nós gráficos com um pequeno deslize de cada um
+* organizar uma sequência de nós gráficos em uma tira quase 3D
+[componentes Java] para dar suporte aos componentes gráficos
+* empacotar uma pasta ou um arquivo dentro de um arquivo ZIP

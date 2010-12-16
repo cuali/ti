@@ -35,7 +35,8 @@ public class ZipFile {
 		this.addDirectory(path, file, false);
 	}
 
-	public void addDirectory(final String path, final File file, final boolean recursively) throws IOException {
+	public void addDirectory(final String path, final File file, final boolean recursively)
+	        throws FileNotFoundException, IOException {
 		// get a listing of the directory content
 		final String[] list = file.list();
 		for (final String filename : list) {
@@ -52,24 +53,24 @@ public class ZipFile {
 		}
 	}
 
-	public void addEntry(final String path, final File file) throws FileNotFoundException, IOException {
-		this.addEntry(path, file, false);
+	public String addEntry(final String path, final File file) throws FileNotFoundException, IOException {
+		return this.addEntry(path, file, false);
 	}
 
-	public void addEntry(final String path, final File file, final boolean recursively) throws FileNotFoundException,
-			IOException {
-		final String root = ((null != path) && (0 < path.length()) && !path.endsWith("/")) ? path + '/' : "";
+	public String addEntry(final String path, final File file, final boolean recursively) throws FileNotFoundException,
+	        IOException {
+		final String entryName = (((null != path) && (0 < path.length()) && !path.endsWith("/")) ? path + '/' : "")
+		        + file.getName();
 		final byte[] buffer = new byte[2156];
 		int bytesRead = 0;
 		if (file.isDirectory()) {
-			final String directory = root + file.getName();
-			addDirectory(directory, file, recursively);
+			addDirectory(entryName, file, recursively);
 		} else {
 			// if we reached here, the File object was not a directory
 			// create a FileInputStream on top of file
 			final FileInputStream fis = new FileInputStream(file);
 			// create a new zip entry
-			final ZipEntry anEntry = new ZipEntry(root + file.getName());
+			final ZipEntry anEntry = new ZipEntry(entryName);
 			// place the zip entry in the ZipOutputStream object
 			this.zos.putNextEntry(anEntry);
 			// now write the content of the file to the ZipOutputStream
@@ -80,6 +81,7 @@ public class ZipFile {
 			// close the Stream
 			fis.close();
 		}
+		return entryName;
 	}
 
 	public void close() throws IOException {
