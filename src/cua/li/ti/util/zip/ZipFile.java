@@ -35,8 +35,8 @@ public class ZipFile {
 		this.addDirectory(path, file, false);
 	}
 
-	public void addDirectory(final String path, final File file, final boolean recursively) throws FileNotFoundException,
-			IOException {
+	public void addDirectory(final String path, final File file, final boolean recursively)
+			throws FileNotFoundException, IOException {
 		// get a listing of the directory content
 		final String[] list = file.list();
 		for (final String filename : list) {
@@ -61,16 +61,17 @@ public class ZipFile {
 			IOException {
 		final String entryName = (((null != path) && (0 < path.length()) && !path.endsWith("/")) ? path + '/' : "")
 				+ file.getName();
-		final byte[] buffer = new byte[2156];
-		int bytesRead = 0;
 		if (file.isDirectory()) {
 			addDirectory(entryName, file, recursively);
 		} else {
+			final byte[] buffer = new byte[2156];
+			int bytesRead = 0;
 			// if we reached here, the File object was not a directory
 			// create a FileInputStream on top of file
 			final FileInputStream fis = new FileInputStream(file);
 			// create a new zip entry
 			final ZipEntry anEntry = new ZipEntry(entryName);
+			anEntry.setComment(entryName);
 			// place the zip entry in the ZipOutputStream object
 			this.zos.putNextEntry(anEntry);
 			// now write the content of the file to the ZipOutputStream
@@ -78,7 +79,7 @@ public class ZipFile {
 				this.zos.write(buffer, 0, bytesRead);
 			}
 			this.zos.closeEntry();
-			// close the Stream
+			// close the input Stream
 			fis.close();
 		}
 		return entryName;
