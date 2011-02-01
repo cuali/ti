@@ -98,4 +98,18 @@ public class ZipFileTest {
 		checkSize(6);
 	}
 
+	@Test
+	public void testAddEntryStringStringFileBoolean() {
+		try {
+			final String name = this.zip.addEntry("", "tmp-dir", new File("C:/temp"), true);
+			assertTrue("tmp-dir".equals(name));
+			this.zip.close();
+		} catch (final FileNotFoundException e) {
+			fail("C:/temp contains files and directories that could not be recursively added.");
+		} catch (final IOException e) {
+			fail("C:/temp could not be added: " + e.getCause());
+		}
+		checkSize(6);
+	}
+
 }

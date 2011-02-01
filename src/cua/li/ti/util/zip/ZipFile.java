@@ -1,12 +1,20 @@
 package cua.li.ti.util.zip;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.JarURLConnection;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -61,8 +69,13 @@ public class ZipFile {
 			IOException {
 		final String entryName = (((null != path) && (0 < path.length()) && !path.endsWith("/")) ? path + '/' : "")
 				+ file.getName();
+		return this.addEntry(path, entryName, file, recursively);
+	}
+
+	public String addEntry(final String path, final String entryAlias, final File file, final boolean recursively)
+			throws FileNotFoundException, IOException {
 		if (file.isDirectory()) {
-			addDirectory(entryName, file, recursively);
+			addDirectory(entryAlias, file, recursively);
 		} else {
 			final byte[] buffer = new byte[2156];
 			int bytesRead = 0;
@@ -70,8 +83,8 @@ public class ZipFile {
 			// create a FileInputStream on top of file
 			final FileInputStream fis = new FileInputStream(file);
 			// create a new zip entry
-			final ZipEntry anEntry = new ZipEntry(entryName);
-			anEntry.setComment(entryName);
+			final ZipEntry anEntry = new ZipEntry(entryAlias);
+			anEntry.setComment(entryAlias);
 			// place the zip entry in the ZipOutputStream object
 			this.zos.putNextEntry(anEntry);
 			// now write the content of the file to the ZipOutputStream
@@ -82,7 +95,7 @@ public class ZipFile {
 			// close the input Stream
 			fis.close();
 		}
-		return entryName;
+		return entryAlias;
 	}
 
 	public void close() throws IOException {
@@ -93,6 +106,32 @@ public class ZipFile {
 		if (null != this.zf) {
 			this.zf.close();
 		}
+	}
+
+	public static void extract(final URL url, final File destination) throws IOException {
+		InputStream is = null;
+		if ("jar".equals(url.getProtocol())) {
+			final JarURLConnection connection = (JarURLConnection) url.openConnection();
+			is = connection.getJarFile().getInputStream(connection.getJarEntry());
+		} else if ("file".equals(url.getProtocol())) {
+			try {
+				is = new BufferedInputStream(new FileInputStream(new File(url.toURI())));
+			} catch (final URISyntaxException urise) {
+				Logger.getLogger(ZipFile.class.getName()).log(Level.SEVERE, null, urise);
+			}
+		} else
+			throw new UnsupportedOperationException("Unsupported protocol: " + url.getProtocol());
+		if (!destination.getParentFile().exists()) {
+			destination.mkdirs();
+		}
+		final OutputStream bos = new BufferedOutputStream(new FileOutputStream(destination));
+		final byte[] buffer = new byte[2156];
+		int bytesRead = 0;
+		while ((bytesRead = is.read(buffer)) != -1) {
+			bos.write(buffer, 0, bytesRead);
+		}
+		bos.close();
+		is.close();
 	}
 
 	// the following methods are offering a complete compatibility with the
