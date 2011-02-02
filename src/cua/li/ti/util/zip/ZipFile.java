@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -42,8 +43,7 @@ public class ZipFile {
 		for (final String filename : list) {
 			final File content = new File(file, filename);
 			if (content.isDirectory()) {
-				// if the File object is a directory, call this
-				// function again to add its content recursively
+				// if the File object is a directory, call this function again to add its content recursively
 				if (recursively) {
 					addEntry(path, content, recursively);
 				}
@@ -66,18 +66,21 @@ public class ZipFile {
 		if (file.isDirectory()) {
 			addDirectory(entryName, file, recursively);
 		} else {
-			// if we reached here, the File object was not a directory
-			// create a FileInputStream on top of file
+			// if we reached here, the File object was not a directory create a FileInputStream on top of file
 			final FileInputStream fis = new FileInputStream(file);
 			// create a new zip entry
 			final ZipEntry anEntry = new ZipEntry(entryName);
-			// place the zip entry in the ZipOutputStream object
-			this.zos.putNextEntry(anEntry);
-			// now write the content of the file to the ZipOutputStream
-			while ((bytesRead = fis.read(buffer)) != -1) {
-				this.zos.write(buffer, 0, bytesRead);
+			// place the zip entry in the ZipOutputStream object if it is not already there
+			try {
+				this.zos.putNextEntry(anEntry);
+				// now write the content of the file to the ZipOutputStream
+				while ((bytesRead = fis.read(buffer)) != -1) {
+					this.zos.write(buffer, 0, bytesRead);
+				}
+				this.zos.closeEntry();
+			} catch (ZipException ze) {
+				// just skip this entry silently
 			}
-			this.zos.closeEntry();
 			// close the Stream
 			fis.close();
 		}
