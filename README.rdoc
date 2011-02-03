@@ -1,8 +1,28 @@
-﻿Este repositório está dedicado para compartilhar componentes de *TI* (Tecnologias da Inteligência ou _Technologies_ _de_ _l_'_Intelligence_) desenvolvidos para nossas aplicações.
+﻿
+== TI
 
-[componentes Visage] para uma interface gráfica mais orientada à manipulação direta
-* escolher uma cor em células hexagonais organizadas por nuances
-* empilhar vários nós gráficos com um pequeno deslize de cada um
-* organizar uma sequência de nós gráficos em uma tira quase 3D
-[componentes Java] para dar suporte aos componentes gráficos
-* empacotar uma pasta ou um arquivo dentro de um arquivo ZIP
+Este repositório está dedicado para compartilhar componentes de 
+*TI* (<i>Technologies de l'Intelligence</i> ou <b>Tecnologias da Inteligência</b>) 
+desenvolvidos para nossas aplicações.
+
+=== componentes existentes
+
+[componentes Visage (ex-<tt>JavaFX</tt>)]
+  para uma interface gráfica mais orientada à manipulação direta
+  * escolher uma cor entre 216 em células hexagonais organizadas por nuances
+    (inspirado em VisiBone[http://www.VisiBone.com/color/hexagon.html] de Bob Stein)
+  * organizar uma sequência de nós gráficos em uma tira quase 3D
+  * empilhar vários nós gráficos com um pequeno deslize de cada um
+  * relógio com possibilidade de escolher ao vivo a cor dos ponteiros
+[componentes Java]
+  para dar suporte aos componentes gráficos
+  * empacotar uma pasta ou um arquivo dentro de um arquivo ZIP
+
+=== componentes planejados
+
+[componentes Visage (ex-<tt>JavaFX</tt>)]
+  esperando por um patrocinador
+  * escolher uma cor entre 1068 em células triangulares organizadas por nuances
+    (inspirado em VisiBone[http://www.VisiBone.com/color/kilochart.html] de Bob Stein)
+  * escolher uma fonte numa tabela parecida com a tabela periódica dos elementos
+    (inspirado em Periodic_Table_of_Typefaces[http://www.squidspot.com/Periodic_Table_of_Typefaces.html] de Camdon Wilde)

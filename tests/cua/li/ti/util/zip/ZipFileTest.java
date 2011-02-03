@@ -3,16 +3,16 @@ package cua.li.ti.util.zip;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ZipFileTest {
 	private File file;
@@ -91,6 +91,20 @@ public class ZipFileTest {
 		try {
 			final String name = this.zip.addEntry("", new File("C:/temp"), true);
 			assertTrue("temp".equals(name));
+			this.zip.close();
+		} catch (final FileNotFoundException e) {
+			fail("C:/temp contains files and directories that could not be recursively added.");
+		} catch (final IOException e) {
+			fail("C:/temp could not be added: " + e.getCause());
+		}
+		checkSize(6);
+	}
+
+	@Test
+	public void testAddEntryStringStringFileBoolean() {
+		try {
+			final String name = this.zip.addEntry("", "tmp-dir", new File("C:/temp"), true);
+			assertTrue("tmp-dir".equals(name));
 			this.zip.close();
 		} catch (final FileNotFoundException e) {
 			fail("C:/temp contains files and directories that could not be recursively added.");
