@@ -133,7 +133,7 @@ public class Dock extends HBox {
                 visibleDirty = true;
                 center = referenceIndex
             }
-    public var center :Integer = 0 on replace {
+    public-init protected var center :Integer = 0 on replace {
                 def sizeOfContent = sizeof getManaged(content) - 1;
                 if ((0 <= sizeOfContent) and (sizeOfContent < center)) then center = sizeOfContent;
                 if (0 > center) then center = 0;
@@ -170,7 +170,7 @@ public class Dock extends HBox {
         }
     }
     
-    function layoutNode(managedContent :Node[], position :Integer) {
+    function layoutNode(managedContent :Node[], position :Integer) :Void {
         var index = visibleContent[position];
         if (0 > index) {
             return
@@ -180,5 +180,19 @@ public class Dock extends HBox {
         node.cache = true;
         node.effect = perspectives[position];
         layoutNode(node,  translations[position].x, -1, getNodePrefWidth(node), getNodePrefHeight(node), false)
+    }
+    
+    public function focus(node :Node) :Void {
+        def managedContent = getManaged(content);
+        for (position in [LATERAL + sides .. LATERAL - sides step -1]) {
+            var index = visibleContent[position];
+            if (0 > index) {
+                continue
+            }
+            if (node == managedContent[index]) {
+                center = index;
+                return
+            }
+        }
     }
 }
