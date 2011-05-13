@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="whereis" default="jar-whereis" basedir=".">
+    <target name="jar-whereis">
+        <jar manifest="${src.dir}/cua/li/ti/whereis/manifest.mf" jarfile="${dist.dir}/whereis.jar">
+            <fileset dir="${src.dir}">
+                <include name="cua/li/ti/whereis/WhereIs.java" />
+                <include name="cua/li/ti/whereis/build.xml" />
+            </fileset>
+            <fileset dir="${build.dir}/compiled">
+                <include name="cua/li/ti/whereis/*.class" />
+            </fileset>
+        </jar>
+    </target>
+</project>

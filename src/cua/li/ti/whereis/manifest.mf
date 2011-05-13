@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Created-By: Alain BÃ©arez (A@cua.li)
+Created-By: Alain Béarez (A@cua.li)
 Main-Class: cua.li.ti.whereis.WhereIs
 
