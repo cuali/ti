@@ -77,29 +77,35 @@ public class ZipFile {
 		if (file.isDirectory()) {
 			addDirectory(entryAlias, file, recursively);
 		} else {
-			final byte[] buffer = new byte[2156];
-			int bytesRead = 0;
 			// if we reached here, the File object was not a directory
 			// create a FileInputStream on top of file
 			final FileInputStream fis = new FileInputStream(file);
-			// create a new zip entry
-			final ZipEntry anEntry = new ZipEntry(entryAlias);
-			anEntry.setComment(entryAlias);
-			// place the zip entry in the ZipOutputStream object if it is not already there
-			try {
-				this.zos.putNextEntry(anEntry);
-				// now write the content of the file to the ZipOutputStream
-				while ((bytesRead = fis.read(buffer)) != -1) {
-					this.zos.write(buffer, 0, bytesRead);
-				}
-				this.zos.closeEntry();
-			} catch (ZipException ze) {
-				// just skip this entry silently
-			}
+                        this.addEntry(entryAlias, fis);
 			// close the input Stream
 			fis.close();
 		}
 		return entryAlias;
+	}
+
+	public String addEntry(final String entryAlias, final InputStream is)
+	        throws FileNotFoundException, IOException {
+                // create a new zip entry
+                final ZipEntry anEntry = new ZipEntry(entryAlias);
+                anEntry.setComment(entryAlias);
+                // place the zip entry in the ZipOutputStream object if it is not already there
+                try {
+                        this.zos.putNextEntry(anEntry);
+                        final byte[] buffer = new byte[2156];
+                        int bytesRead = 0;
+                        // now write the content of the file to the ZipOutputStream
+                        while ((bytesRead = is.read(buffer)) != -1) {
+                                this.zos.write(buffer, 0, bytesRead);
+                        }
+                        this.zos.closeEntry();
+                } catch (ZipException ze) {
+                        // just skip this entry silently
+                }
+                return entryAlias;
 	}
 
 	public void close() throws IOException {

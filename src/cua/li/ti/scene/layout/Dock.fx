@@ -128,10 +128,8 @@ public class Dock extends HBox {
                 else (this.layoutInfo as LayoutInfo).width;
     override var content on replace {
                 def managedContent = getManaged(content);
-                def referenceIndex = sizeof managedContent - 1;
-                referenceNode = if (0 > referenceIndex) then null else managedContent[referenceIndex];
-                visibleDirty = true;
-                center = referenceIndex
+                referenceNode = if (0 > sizeof managedContent - 1) then null else managedContent[center];
+                visibleDirty = true
             }
     public-init protected var center :Integer = 0 on replace {
                 def sizeOfContent = sizeof getManaged(content) - 1;
@@ -183,6 +181,13 @@ public class Dock extends HBox {
     }
     
     public function focus(node :Node) :Void {
+        def index = indexOf(node);
+        if (0 <= index) {
+            center = index
+        }
+    }
+
+    public function indexOf(node :Node) :Integer {
         def managedContent = getManaged(content);
         for (position in [LATERAL + sides .. LATERAL - sides step -1]) {
             var index = visibleContent[position];
@@ -190,9 +195,33 @@ public class Dock extends HBox {
                 continue
             }
             if (node == managedContent[index]) {
-                center = index;
-                return
+                return index
             }
         }
+        return -1
     }
+
+    public function indexOf(sceneX :Number, sceneY :Number) :Integer {
+        def localPoint = sceneToLocal(sceneX, sceneY);
+        var bounds = this.layoutInfo as LayoutInfo;
+        if ((localPoint.x < bounds.width) and (localPoint.y < bounds.height)) {
+            // FIXME calculate the effective index of the managed content at the given point
+            var index :Integer;
+            def managedContent = getManaged(content);
+            for (position in [LATERAL + sides .. LATERAL - sides step -1]) {
+                index = visibleContent[position];
+                if (0 > index) {
+                    continue
+                }
+                var node = managedContent[index];
+                if (node.boundsInParent.contains(localPoint)) {
+                    return index
+                }
+            }
+            return -1
+        } else {
+            -1  // should reject only when out of the layoutInfo bounds
+        }
+    }
+
 }
