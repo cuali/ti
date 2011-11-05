@@ -9,34 +9,34 @@ import javafx.scene.layout.Stack;
  */
 
 public class ShiftingStack extends Stack {
-    public-init var shiftX: Number = 10;
-    public-init var shiftY: Number = 10;
+    public-init var shiftX :Number = 10;
+    public-init var shiftY :Number = 10;
 
-    var superHeight: Number;
-    var superWidth: Number;
-    var preferredWidth: Number;
-    var preferredHeight: Number;
+    var superHeight :Number;
+    var superWidth :Number;
+    var preferredWidth :Number;
+    var preferredHeight :Number;
     var preferredDirty = true;
 
     override var content on replace {
       preferredDirty = true
     }
     
-    override function getPrefHeight(width:Number):Number {
+    override function getPrefHeight(width :Number) :Number {
         if (preferredDirty) {
             calculatePrefSize()
         }
         preferredHeight
     }
     
-    override function getPrefWidth(height:Number):Number {
+    override function getPrefWidth(height :Number) :Number {
         if (preferredDirty) {
             calculatePrefSize()
         }
         preferredWidth
     }
     
-    function calculatePrefSize():Void {
+    function calculatePrefSize() :Void {
         superHeight = super.getPrefHeight(width);
         superWidth = super.getPrefWidth(height);
         def sizeOfContent = (sizeof getManaged(content)) - 1;
@@ -45,7 +45,7 @@ public class ShiftingStack extends Stack {
         preferredDirty = false
     }
   
-    override function doLayout():Void {
+    override function doLayout() :Void {
         if (preferredDirty) {
             calculatePrefSize()
         }

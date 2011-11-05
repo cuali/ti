@@ -33,7 +33,7 @@ public class Dock extends HBox {
     def pyb3 = bind preferredHeight * (1 + 0.5) / 2;
     def pyb4 = bind preferredHeight * (1 + QUARTER_SQRT_2) / 2;
     // <editor-fold defaultstate="collapsed" desc="carefully ordered sequence of perspective transforms">
-    def perspectives: PerspectiveTransform[] = [
+    def perspectives :PerspectiveTransform[] = [
         PerspectiveTransform {
             ulx: 0
             uly: bind pyt4
@@ -106,7 +106,7 @@ public class Dock extends HBox {
         }
     ];
     // </editor-fold>
-    def translations: Translate[] = [
+    def translations :Translate[] = [
         Translate { x: bind pxl4 }
         Translate { x: bind pxl3 }
         Translate { x: bind pxl2 }
@@ -138,11 +138,11 @@ public class Dock extends HBox {
                 visibleDirty = true;
                 requestLayout()
             }
-    var referenceNode: Node;
+    var referenceNode :Node;
     var visibleDirty = true;
-    var visibleContent: Integer[] = [-1, -2, -1, -2, -1, -2, -1];
+    var visibleContent :Integer[] = [-1, -2, -1, -2, -1, -2, -1];
 
-    function updateVisible(): Void {
+    function updateVisible() :Void {
         def managedContent = getManaged(content);
         def sizeOfContent = sizeof managedContent;
         visibleContent = for (i in [center - LATERAL .. center + LATERAL]) { if (i < sizeOfContent) then i else -1 };
@@ -155,7 +155,7 @@ public class Dock extends HBox {
         visibleDirty = false
     }
 
-    override function doLayout(): Void {
+    override function doLayout() :Void {
         if (visibleDirty) {
             updateVisible()
         }

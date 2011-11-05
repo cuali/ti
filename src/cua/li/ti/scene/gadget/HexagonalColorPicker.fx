@@ -42,7 +42,7 @@ public class HexagonalColorPicker extends CustomNode {
     * the center or the border is pressed, passing the chosen color
     * or original color, depending upon which was pressed.
     */
-    public var onClose: function(color:Color,hasChanged:Boolean):Void;
+    public var onClose: function(color :Color,hasChanged :Boolean) :Void;
     /** The chosen color when calling the <code>onClose</code> function. */
     public-read var chosen :Paint;
     /** The original color is set before setting the <code>visible</code> attribute to true. */
@@ -192,8 +192,9 @@ public class HexagonalColorPicker extends CustomNode {
 		/*b*/cellRadius * HALF_3, 
 		/*v*/cellRadius * HALF_3];
 }
-//<editor-fold defaultstate="collapsed" desc="carefully ordered sequence of 216 color cells">
-def CELLS: ColorCell[] = [
+
+// <editor-fold defaultstate="collapsed" desc="carefully ordered sequence of 216 color cells">
+def CELLS :ColorCell[] = [
     ColorCell {shift: 'h' color: "000000"}
     ColorCell {shift: 'v' color: "333333"}
     ColorCell {shift: 'f' color: "666666"}
@@ -411,4 +412,4 @@ def CELLS: ColorCell[] = [
     ColorCell {shift: 'h' color: "ff0066"}
     ColorCell {shift: 'h' color: "ff0099"}
 ];
-//</editor-fold>
+// </editor-fold>

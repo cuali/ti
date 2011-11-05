@@ -45,7 +45,7 @@ public class Demo {
                 centerX: RADIUS
                 centerY: Math.sqrt(3) * RADIUS / 2
                 radius: RADIUS
-                onClose: function(color:Color,hasChanged:Boolean):Void {
+                onClose: function(color :Color,hasChanged :Boolean) :Void {
                     if (hasChanged) then CLOCK.selectedPaint = color
                 }
             }
@@ -54,7 +54,7 @@ public class Demo {
     }
 }
 
-function run (): Void {
+function run () :Void {
     Stage {
         title: "Demo"
         scene: Scene {

@@ -30,21 +30,21 @@ import javafx.scene.transform.Transform;
  * @author A@cua.li
  */
 public class SpiralClock extends CustomNode {
-    def SECOND_HAND :SpiralHand = SpiralHand {
+    def SECOND_HAND = SpiralHand {
         length: bind size / 2
         paint: bind secondPaint
         rotation: Rotate {
             angle: bind seconds * 360/60 -90
         }
     }
-    def MINUTE_HAND :SpiralHand = SpiralHand {
+    def MINUTE_HAND = SpiralHand {
         length: bind size * 0.4
         paint: bind minutePaint
         rotation: Rotate {
             angle: bind minutes * 360/60 -90
         }
     }
-    def HOUR_HAND :SpiralHand = SpiralHand {
+    def HOUR_HAND = SpiralHand {
         length: bind size * 0.3
         paint: bind hourPaint
         rotation: Rotate {
@@ -69,7 +69,7 @@ public class SpiralClock extends CustomNode {
             }
         }
     };
-    override var onMouseClicked = function(me:MouseEvent):Void{
+    override var onMouseClicked = function(me :MouseEvent) :Void{
         if (SECOND_HAND == selectedHand) {
             selectedHand = MINUTE_HAND;
             return
@@ -116,7 +116,7 @@ public class SpiralClock extends CustomNode {
              ImageView {
                 translateX: -size/2
                 translateY: -size/2
-                image: Image { url : "{__DIR__}SpiralClockNoPointers.png" }
+                image: Image { url: "{__DIR__}SpiralClockNoPointers.png" }
                 fitHeight: size
                 fitWidth: size
             }
