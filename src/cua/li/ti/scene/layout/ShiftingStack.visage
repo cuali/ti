@@ -1,0 +1,52 @@
+package cua.li.ti.scene.layout;
+
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
+
+import visage.javafx.scene.layout.StackPane;
+
+/**
+ * In its current implementation this class assumes all content nodes are the same size.
+ * It does NOT honor the <code>nodeHPos</code> and <code>nodeVPos</code> attributes.
+ * @author A@cua.li
+ */
+
+public class ShiftingStack extends StackPane {
+    override def wrappedNode = ExtendedStackPane { preferredDirty: bind preferredDirty with inverse };
+    public-init var shiftX :Number = 10;
+    public-init var shiftY :Number = 10;
+    var preferredDirty = true;
+
+    override var children on replace {
+      preferredDirty = true
+    }
+}
+
+class ExtendedStackPane extends javafx.scene.layout.StackPane {
+    var preferredDirty = true;
+    var superHeight :Number;
+    var superWidth :Number;
+    var preferredWidth :Number;
+    var preferredHeight :Number;
+    
+    function calculatePrefSize() :Void {
+        superHeight = super.prefHeight(width);
+        superWidth = super.prefWidth(height);
+        def sizeOfContent = (sizeof getManagedChildren()) - 1;
+        preferredHeight = superHeight + shiftY * sizeOfContent;
+        preferredWidth = superWidth + shiftX * sizeOfContent;
+        preferredDirty = false
+    }
+  
+    override function layoutChildren() :Void {
+        if (preferredDirty) {
+            calculatePrefSize()
+        }
+        def managedContent = getManagedChildren();
+        def sizeOfContent = managedContent.size() - 1;
+        for (node in managedContent) {
+            def nodeShift = sizeOfContent - indexof node;
+            layoutInArea(node as javafx.scene.Node, shiftX * nodeShift, shiftY * nodeShift, preferredWidth, preferredHeight, 0, HPos.RIGHT, VPos.BOTTOM)
+        }
+    }
+}

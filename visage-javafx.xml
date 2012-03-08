@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Visage Compile" default="-post-compile" basedir=".">
+    <description>Compiles the Visage source files in the project.</description>
+    <target name="-post-compile">
+        <echo level="info" message="Compiling Visage source files"/>
+        <condition property="binary.extension" value=".exe" else="">
+            <os family="windows"/>
+        </condition>
+        <pathconvert property="visage.sources" pathsep=" ">
+            <path>
+                <fileset dir="${src.dir}" includes="**/*.visage"/>
+            </path>
+        </pathconvert>
+        <exec executable="${visage.home}/bin/visagec${binary.extension}" failonerror="true" logerror="true">
+            <arg value="-d"/>
+            <arg value="${build.classes.dir}"/>
+            <arg value="-cp"/>
+            <arg path="${build.classes.dir}:${javac.classpath}:${endorsed.classpath}"/>
+            <arg line="${visage.sources}"/>
+        </exec>
+        <echo level="info" message="Post-compiled Visage source files"/>
+    </target>
+    <target depends="init,compile,jar" description="Run the Visage main class." name="run">
+        <exec executable="${visage.home}/bin/visage${binary.extension}" failonerror="true" logerror="true" resolveexecutable="true">
+            <env key="JAVA_HOME" value="${java.sdk}" />
+            <arg value="-cp"/>
+            <arg path="${dist.jar}:${javac.classpath}:${endorsed.classpath}"/>
+            <arg line="${javafx.main.class}"/>
+        </exec>
+    </target>
+</project>

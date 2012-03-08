@@ -78,10 +78,11 @@ public class HexagonalColorPicker extends Group {
      */
     function draw() :Void {
         def colorName = Text {
-            font: bind Font.font("Consolas Bold", cellRadius * 0.707)
+            font: bind Font.font("Monospace Bold", cellRadius * 0.707)
             wrappingWidth: bind cellRadius * 3.3
             translateX: bind cellRadius * 3.3 / -2
             visible: false
+            mouseTransparent: true
         };
         this.children = [
             RegularPolygon {
@@ -112,7 +113,7 @@ public class HexagonalColorPicker extends Group {
                 radius: bind cellRadius
                 strokeWidth: 0
                 stroke: Color.TRANSPARENT
-                fill: bind chosen //with inverse
+                fill: bind chosen with inverse
                 mouseTransparent: false
                 onMouseEntered: function (me :MouseEvent) :Void {
                     centralHexagon.toFront();
@@ -141,39 +142,37 @@ public class HexagonalColorPicker extends Group {
             if (0 > index) throw new IllegalArgumentException("Unknown position shift {cell.shift}");
             relPosX += horizontalShift[index];
             relPosY += verticalShift[index];
-            insert
-                RegularPolygon {
-                    centerX: centerX + relPosX
-                    centerY: centerY + relPosY
-                    radius: bind cellRadius
-                    strokeWidth: 0
-                    stroke: Color.TRANSPARENT
-                    fill: cell.color
-                    mouseTransparent: false
-                    onMouseEntered: function (me :MouseEvent) :Void {
-                        delete currentHexagon.transforms;
-                        def node = me.getTarget() as RegularPolygon;
-                        node.toFront();
-                        colorName.text = String.format("%^#s", cell.color);
-                        colorName.fill = if ('W' == cell.legend) then Color.WHITE else Color.BLACK;
-                        colorName.x = node.centerX;
-                        colorName.y = node.centerY;
-                        colorName.visible = true;
-                        colorName.toFront();
-                        currentHexagon = node;
-                        node.transforms = Transform.scale(2, 2, node.centerX, node.centerY)
-                    }
-                    onMouseExited: function (me :MouseEvent) :Void {
-                        colorName.visible = false;
-                        delete (me.getTarget() as RegularPolygon).transforms
-                    }
-                    onMouseClicked: function (me :MouseEvent) :Void {
-                        centralLabel = String.format("%^#s", cell.color);
-                        centralColor = colorName.fill;
-                        centralHexagon.fill = (me.getTarget() as RegularPolygon).fill
-                    }
+            def hexagon :RegularPolygon = RegularPolygon {
+                centerX: centerX + relPosX
+                centerY: centerY + relPosY
+                radius: bind cellRadius
+                strokeWidth: 0
+                stroke: Color.TRANSPARENT
+                fill: cell.color
+                mouseTransparent: false
+                onMouseEntered: function (me :MouseEvent) :Void {
+                    delete currentHexagon.transforms;
+                    hexagon.toFront();
+                    colorName.text = String.format("%#s", cell.color);
+                    colorName.fill = if ('W' == cell.legend) then Color.WHITE else Color.BLACK;
+                    colorName.x = hexagon.centerX;
+                    colorName.y = hexagon.centerY;
+                    colorName.visible = true;
+                    colorName.toFront();
+                    currentHexagon = hexagon;
+                    currentHexagon.transforms = Transform.scale(2, 2, hexagon.centerX, hexagon.centerY)
                 }
-            into this.children
+                onMouseExited: function (me :MouseEvent) :Void {
+                    colorName.visible = false;
+                    delete hexagon.transforms
+                }
+                onMouseClicked: function (me :MouseEvent) :Void {
+                    centralLabel = String.format("%#s", cell.color);
+                    centralColor = colorName.fill;
+                    centralHexagon.fill = hexagon.fill
+                }
+            }
+            insert hexagon into this.children
         }
     }
     def horizontalShift = bind [
