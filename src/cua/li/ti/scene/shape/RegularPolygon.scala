@@ -7,6 +7,7 @@ import scalafx.beans.property.ReadOnlyDoubleProperty
 import scalafx.beans.property.ReadOnlyIntegerProperty
 import scalafx.scene.shape.Polygon
 
+
 /**
  * A simple regular polygon can be defined by:
  * <ol>
@@ -19,7 +20,8 @@ import scalafx.scene.shape.Polygon
  *
  * @author A@cua.li
  */
-class RegularPolygon extends Polygon(new javafx.scene.shape.Polygon) {
+class RegularPolygon(inicialAngle :Double = -90, inicialSides :Int = 6)
+        extends Polygon(new javafx.scene.shape.Polygon) {
 	var centerX :Double = 0
 	var centerY :Double = 0
 	private[this] val radiusProperty = new DoubleProperty(Double.box(30), "radius")
@@ -28,14 +30,14 @@ class RegularPolygon extends Polygon(new javafx.scene.shape.Polygon) {
 	    radiusProperty.value = value
 	    computePoints
 	}
-	private [this] val angleProperty = new DoubleProperty(Double.box(-90), "angle")
+	private [this] val angleProperty = new DoubleProperty(Double.box(inicialAngle), "angle")
 	def angle :ReadOnlyDoubleProperty = angleProperty
 	def angle_=(value :Double) {
 	    angleProperty.value = value
 	    alpha = Math.toRadians(value)
 	    computePoints
 	}
-	private[this] val sidesProperty = new IntegerProperty(Int.box(6), "sides")
+	private[this] val sidesProperty = new IntegerProperty(Int.box(inicialSides), "sides")
 	def sides :ReadOnlyIntegerProperty = sidesProperty
 	def sides_=(value :Int) {
 	    sidesProperty.value = value
@@ -51,4 +53,6 @@ class RegularPolygon extends Polygon(new javafx.scene.shape.Polygon) {
 	        points.add(centerY + (Math.sin(alpha + theta*side) * radiusProperty.value))
 	    }
 	}
+	angle = inicialAngle
+	sides = inicialSides
 }
