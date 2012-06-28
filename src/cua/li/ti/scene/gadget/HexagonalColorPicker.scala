@@ -189,7 +189,7 @@ class HexagonalColorPicker extends Pane {
       hexagon.onMouseClicked = (me :MouseEvent) => {
         centralLabel = cell.color
         centralPaint = colorName.fill().asInstanceOf[jfxsp.Color]
-        centralHexagon.fill = hexagon.fill()
+        centralHexagon.fill = hexagon.fill().asInstanceOf[jfxsp.Color]
       }
       content += hexagon
     }

@@ -17,7 +17,7 @@ import scalafx.scene.shape.Polygon
  *
  * @author A@cua.li
  */
-class RegularPolygon(inicialAngle :Double = -90, inicialSides :Int = 6)
+class RegularPolygon(var inicialAngle :Double = -90, var inicialSides :Int = 6)
   extends Polygon(new javafx.scene.shape.Polygon) {
   var centerX :Double = 0
   var centerY :Double = 0

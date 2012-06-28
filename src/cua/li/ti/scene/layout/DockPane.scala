@@ -20,10 +20,13 @@ import scalafx.beans.binding.NumberBinding
 class DockPane(override val delegate :DockPane.ExtendedHBox) extends HBox(delegate) {
   def this(preferredHeight :DoubleProperty, preferredWidth :DoubleProperty) 
       = this(new DockPane.ExtendedHBox(preferredHeight, preferredWidth))
-  def center = delegate.center
+  def center = delegate.center()
   def center_=(v :Int) {
     delegate.center() = v
   }
+  def indexOf(node :Node) = delegate.indexOf(node)
+  def indexOf(sceneX :Double, sceneY :Double) = delegate.indexOf(sceneX, sceneY)
+    
   mouseTransparent = true
 }
 
