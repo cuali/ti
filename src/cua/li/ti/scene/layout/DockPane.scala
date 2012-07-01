@@ -24,6 +24,7 @@ class DockPane(override val delegate :DockPane.ExtendedHBox) extends HBox(delega
   def center_=(v :Int) {
     delegate.center() = v
   }
+  def focus(node :Node) = delegate.focus(node)
   def indexOf(node :Node) = delegate.indexOf(node)
   def indexOf(sceneX :Double, sceneY :Double) = delegate.indexOf(sceneX, sceneY)
     
