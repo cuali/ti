@@ -17,7 +17,7 @@ import scalafx.scene.layout.StackPane
  */
 
 class ShiftingStackPane(override val delegate :jfxsl.StackPane) extends StackPane(delegate) {
-  def this(shiftX :Double, shiftY :Double) = this(new ShiftingStackPane.ExtendedStackPane(shiftX, shiftY))
+  def this(shiftX :Double = 10, shiftY :Double = 10) = this(new ShiftingStackPane.ExtendedStackPane(shiftX, shiftY))
 }
 object ShiftingStackPane {
   private[layout] class ExtendedStackPane(shiftX :Double, shiftY :Double) extends jfxsl.StackPane {

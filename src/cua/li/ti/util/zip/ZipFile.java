@@ -131,7 +131,11 @@ public class ZipFile {
 			}
 		} else
 			throw new UnsupportedOperationException("Unsupported protocol: " + url.getProtocol());
-		if (!destination.getParentFile().exists()) {
+		extract(is, destination);
+	}
+
+    public static void extract(final InputStream is, final File destination) throws FileNotFoundException, IOException {
+        if (!destination.getParentFile().exists()) {
 			destination.mkdirs();
 		}
 		final OutputStream bos = new BufferedOutputStream(new FileOutputStream(destination));
@@ -141,8 +145,8 @@ public class ZipFile {
 			bos.write(buffer, 0, bytesRead);
 		}
 		bos.close();
-		is.close();
-	}
+        is.close();
+    }
 
 	// the following methods are offering a complete compatibility with the
 	// java.util.zip.ZipFile
