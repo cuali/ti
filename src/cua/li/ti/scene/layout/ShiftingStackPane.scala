@@ -45,10 +45,10 @@ object ShiftingStackPane {
       val sizeOfContent = super.getManagedChildren().size
       if (0 < sizeOfContent) {
         val managedContent = super.getManagedChildren().iterator()
-        var nodeShift = sizeOfContent
+        var nodeShift = sizeOfContent - 1
         while (managedContent.hasNext) {
           layoutInArea(managedContent.next, shiftX * nodeShift, shiftY * nodeShift,
-            preferredWidth, preferredHeight, 0, HPos.RIGHT, VPos.BOTTOM)
+            preferredWidth, preferredHeight, 0, HPos.LEFT, VPos.TOP)
           nodeShift -= 1
         }
       }

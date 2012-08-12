@@ -38,7 +38,10 @@ object DockPane {
   val LATERAL = 3 // take care of adding or removing perspectives and translations accordingly
   val SHRINKS = Seq(HALF_SQRT_2, QUARTER_SQRT_2, QUARTER_SQRT_2)
   class ExtendedHBox(val preferredHeight :DoubleProperty, val preferredWidth :DoubleProperty) extends jfxsl.HBox {
-    val nodePrefWidth = new DoubleProperty
+    this.setPrefHeight(preferredHeight())
+    this.setPrefWidth(preferredWidth())
+    val nodePrefWidth = DoubleProperty(0)
+    val nodePrefHeight = DoubleProperty(0)
     var perspectives :Seq[PerspectiveTransform] = Seq(
       new PerspectiveTransform {
         ulx = 0
@@ -51,9 +54,9 @@ object DockPane {
         lly <== preferredHeight
       }
     )
-    var compensation = SQRT_2 - 3
+    var compensation = DoubleProperty(SQRT_2 - 3)
     var translations :Seq[Translate] = Seq(
-      new Translate { x <== nodePrefWidth * compensation / 2 }
+      new Translate { x <== nodePrefWidth * compensation }
     )
     private[this] def addTransform(xShrink :Double, yMinShrink :Double, yMaxShrink :Double, xShift :Double) = {
       val rightTranslate = new Translate { x <== nodePrefWidth * (compensation - xShift) }
@@ -82,8 +85,8 @@ object DockPane {
       perspectives = leftPerspective +: perspectives :+ rightPerspective
     }
     addTransform(SHRINKS(0), 1, HALF_SQRT_2, 0)
-    addTransform(SHRINKS(1), HALF_SQRT_2, 0.5, 1 - HALF_SQRT_2)
-    addTransform(SHRINKS(2), 0.5, QUARTER_SQRT_2, 2 - HALF_SQRT_2 - QUARTER_SQRT_2)
+    addTransform(SHRINKS(1), HALF_SQRT_2, 0.5, 1 - SHRINKS(0))
+    addTransform(SHRINKS(2), 0.5, QUARTER_SQRT_2, 2 - SHRINKS(0) - SHRINKS(1))
 
     val sides = IntegerProperty(LATERAL)
     sides onChange {
@@ -91,9 +94,9 @@ object DockPane {
         {
           if (0 > newSides.intValue) sides() = 0
           if (LATERAL < newSides.intValue) sides() = previousSides.intValue
-          compensation = 0
+          compensation() = 0
           for (side <- 0 until sides()) {
-            compensation += SHRINKS(side) - 1
+            compensation() += SHRINKS(side) - 1
           }
         }
     }
@@ -104,6 +107,7 @@ object DockPane {
           managedContent = getManagedChildren.asInstanceOf[ju.List[jfxs.Node]]
           referenceNode = if (0 == managedContent.size) null else managedContent.get(center())
           nodePrefWidth() = if (null == referenceNode) 0 else referenceNode.prefWidth(preferredHeight())
+          nodePrefHeight() = if (null == referenceNode) 0 else referenceNode.prefHeight(preferredWidth())
           visibleDirty = true
         }
       }
@@ -124,16 +128,16 @@ object DockPane {
     var visibleContent :Seq[Int] = Seq(-1, -2, -1, -2, -1, -2, -1)
 
     private[this] def updateVisible() = {
-      managedContent = getManagedChildren().asInstanceOf[ju.List[jfxs.Node]]
-      val sizeOfContent = managedContent.size
+      val sizeOfContent = getChildren.size
       visibleContent = for (i <- (center() - LATERAL) to (center() + LATERAL)) yield { if (i < sizeOfContent) { i } else { -1 } }
-      val iterator = managedContent.iterator
+      val iterator = getManagedChildren.iterator
       while (iterator.hasNext) {
         val node :jfxs.Node = iterator.next
         node.setCache(false)
         node.setEffect(null)
         node.getTransforms.clear
         node.setVisible(false)
+        node.setManaged(false)
       }
       visibleDirty = false
     }
@@ -142,7 +146,8 @@ object DockPane {
       if (visibleDirty) {
         updateVisible
       }
-      for (position <- (LATERAL + sides()) to LATERAL by -1) {
+      setLayoutX(0)
+      for (position <- (LATERAL + sides()) until LATERAL by -1) {
         prepareNode(position)
       }
       for (position <- (LATERAL - sides()) to LATERAL) {
@@ -153,12 +158,18 @@ object DockPane {
 
     private[this] def prepareNode(position :Int) = {
       var index = visibleContent(position)
-      if (0 <= index) {
-        val node :jfxs.Node = managedContent.get(index)
+      if (0 > index) {
+        if (LATERAL > position) {
+          setLayoutX(getLayoutX + nodePrefWidth())
+        }
+      } else {
+        val node :jfxs.Node = getChildren.get(index)
         node.setVisible(true)
         node.setCache(true)
         node.setEffect(perspectives(position))
+        node.getTransforms().clear
         node.getTransforms().add(translations(position))
+        node.setManaged(true)
       }
     }
 
