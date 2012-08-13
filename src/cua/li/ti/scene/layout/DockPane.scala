@@ -146,7 +146,7 @@ object DockPane {
       if (visibleDirty) {
         updateVisible
       }
-      setLayoutX(0)
+      setTranslateX(0)
       for (position <- (LATERAL + sides()) until LATERAL by -1) {
         prepareNode(position)
       }
@@ -160,7 +160,7 @@ object DockPane {
       var index = visibleContent(position)
       if (0 > index) {
         if (LATERAL > position) {
-          setLayoutX(getLayoutX + nodePrefWidth())
+          setTranslateX(getTranslateX + nodePrefWidth())
         }
       } else {
         val node :jfxs.Node = getChildren.get(index)
