@@ -28,7 +28,7 @@ class DockPane(override val delegate :DockPane.ExtendedHBox) extends HBox(delega
   def indexOf(node :Node) = delegate.indexOf(node)
   def indexOf(sceneX :Double, sceneY :Double) = delegate.indexOf(sceneX, sceneY)
     
-  mouseTransparent = true
+  //mouseTransparent = true
 }
 
 object DockPane {
@@ -100,11 +100,11 @@ object DockPane {
           }
         }
     }
-    var managedContent :ju.List[jfxs.Node] = _
     getChildren.addListener(
       new javafx.collections.ListChangeListener[jfxs.Node]() {
         override def onChanged(change :javafx.collections.ListChangeListener.Change[_ <: jfxs.Node]) {
-          managedContent = getManagedChildren.asInstanceOf[ju.List[jfxs.Node]]
+          checkCenter(center()) // so that it forces the value to be valid
+          val managedContent = getChildren
           referenceNode = if (0 == managedContent.size) null else managedContent.get(center())
           nodePrefWidth() = if (null == referenceNode) 0 else referenceNode.prefWidth(preferredHeight())
           nodePrefHeight() = if (null == referenceNode) 0 else referenceNode.prefHeight(preferredWidth())
@@ -112,13 +112,16 @@ object DockPane {
         }
       }
     )
+    private def checkCenter(newCenter :Int) {
+      val sizeOfContent = getChildren.size - 1
+      if ((0 <= sizeOfContent) && (sizeOfContent < newCenter)) { center() = sizeOfContent }
+      if (0 > center()) { center() = 0 }
+    }
     private[layout] val center = IntegerProperty(0)
     center onChange {
       (_, previousCenter, newCenter) =>
         {
-          val sizeOfContent = managedContent.size - 1;
-          if ((0 <= sizeOfContent) && (sizeOfContent < newCenter.intValue)) { center() = sizeOfContent }
-          if (0 > center.intValue) { center() = 0 }
+          checkCenter(newCenter.intValue)
           visibleDirty = true
           requestLayout()
         }
@@ -135,7 +138,7 @@ object DockPane {
         val node :jfxs.Node = iterator.next
         node.setCache(false)
         node.setEffect(null)
-        node.getTransforms.clear
+        node.setTranslateX(0)
         node.setVisible(false)
         node.setManaged(false)
       }
@@ -167,8 +170,7 @@ object DockPane {
         node.setVisible(true)
         node.setCache(true)
         node.setEffect(perspectives(position))
-        node.getTransforms().clear
-        node.getTransforms().add(translations(position))
+        node.setTranslateX(translations(position).x())
         node.setManaged(true)
       }
     }
@@ -180,8 +182,8 @@ object DockPane {
       }
       2 * width * nodePrefWidth()
     }
-    override def computeMinWidth(height :Double) :Double = computePrefWidth(height)
-    override def computeMaxWidth(height :Double) :Double = computePrefWidth(height)
+    override def computeMinWidth(height :Double) :Double = Math.min(computePrefWidth(height), getMinWidth)
+    override def computeMaxWidth(height :Double) :Double = Math.max(computePrefWidth(height), getMaxWidth)
 
     def focus(node :Node) = {
       val index = indexOf(node)
@@ -191,7 +193,7 @@ object DockPane {
     }
 
     def indexOf(node :Node) :Int = {
-      managedContent = getManagedChildren.asInstanceOf[ju.List[jfxs.Node]]
+      val managedContent = getManagedChildren
       for (position <- (LATERAL + sides()) to (LATERAL - sides()) by -1) {
         var index = visibleContent(position)
         if (0 <= index) {
@@ -208,11 +210,12 @@ object DockPane {
       var bounds = this.boundsInLocalProperty.get;
       if ((localPoint.getX < bounds.getWidth) && (localPoint.getY < bounds.getHeight)) {
         // FIXME calculate the effective index of the managed content at the given point
+        val managedContent = getManagedChildren
         var index :Int = -1
         for (position <- (LATERAL + sides()) to (LATERAL - sides()) by -1) {
           index = visibleContent(position)
           if (0 <= index) {
-            var node = managedContent.get(index)
+            var node = managedContent.get(index).asInstanceOf[jfxs.Node]
             if (node.boundsInParentProperty.get.contains(localPoint)) {
               return index
             }
