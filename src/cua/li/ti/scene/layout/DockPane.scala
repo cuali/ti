@@ -20,6 +20,10 @@ import scalafx.beans.binding.NumberBinding
 class DockPane(override val delegate :DockPane.ExtendedHBox) extends HBox(delegate) {
   def this(preferredHeight :DoubleProperty, preferredWidth :DoubleProperty) 
       = this(new DockPane.ExtendedHBox(preferredHeight, preferredWidth))
+  def sides = delegate.sides()
+  def sides_=(v :Int) {
+    delegate.sides() = v
+  }
   def center = delegate.center()
   def center_=(v :Int) {
     delegate.center() = v
@@ -103,7 +107,7 @@ object DockPane {
     getChildren.addListener(
       new javafx.collections.ListChangeListener[jfxs.Node]() {
         override def onChanged(change :javafx.collections.ListChangeListener.Change[_ <: jfxs.Node]) {
-          checkCenter(center()) // so that it forces the value to be valid
+          checkCenter(center()) // so that it forces the value to be valid even after dropping some content
           val managedContent = getChildren
           referenceNode = if (0 == managedContent.size) null else managedContent.get(center())
           nodePrefWidth() = if (null == referenceNode) 0 else referenceNode.prefWidth(preferredHeight())
@@ -172,6 +176,7 @@ object DockPane {
         node.setEffect(perspectives(position))
         node.setTranslateX(translations(position).x())
         node.setManaged(true)
+        //layoutInArea()
       }
     }
 
