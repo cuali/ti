@@ -3,21 +3,23 @@ package cua.li.ti
 import cua.li.ti.scene.gadget.HexagonalColorPicker
 import cua.li.ti.scene.layout.DockPane
 import cua.li.ti.scene.layout.ShiftingStackPane
-import javafx.scene.{ transform => jfxst }
+import java.lang.Math
+import javafx.scene.{ transform => jfxst , paint => jfxsp }
 import scalafx.Includes._
 import scalafx.application.JFXApp
+import scalafx.beans.property.DoubleProperty
+import scalafx.beans.property.ObjectProperty
 import scalafx.scene.Scene
 import scalafx.scene.control.Button
+import scalafx.scene.effect.PerspectiveTransform
 import scalafx.scene.input.MouseEvent
+import scalafx.scene.layout.HBox
 import scalafx.scene.layout.StackPane
+import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
-import scalafx.stage.Stage
-import scalafx.scene.layout.HBox
-import scalafx.scene.layout.VBox
-import scalafx.scene.effect.PerspectiveTransform
 import scalafx.scene.transform.Translate
-import scalafx.beans.property.DoubleProperty
+import scalafx.stage.Stage
 
 /**
  * @author A@cua.li
@@ -34,10 +36,10 @@ object Demo extends JFXApp {
     }
   stage = new Stage {
     title = "Demo"
-    scene = new Scene(2 * RADIUS, Math.sqrt(3) * RADIUS) {
+    scene = new Scene(3 * RADIUS, 720) {
       content = new VBox {
         val dockHeight = DoubleProperty(100)
-        val dockWidth = DoubleProperty(400)
+        val dockWidth = DoubleProperty(600)
         content = Seq(
           new StackPane {
             content = Seq(
@@ -62,85 +64,90 @@ object Demo extends JFXApp {
           },
           new DockPane(dockHeight, dockWidth) {
             content = Seq(
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE }
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE),
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE)
             )
             center = 0
           },
           new DockPane(dockHeight, dockWidth) {
             content = Seq(
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE }
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE),
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE)
             )
             center = 1
           },
           new DockPane(dockHeight, dockWidth) {
             content = Seq(
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE }
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE),
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE)
             )
             center = 2
           },
           new DockPane(dockHeight, dockWidth) {
             content = Seq(
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE }
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE),
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE)
             )
             center = 3
           },
           new DockPane(dockHeight, dockWidth) {
             content = Seq(
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE }
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE),
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE)
             )
             center = 4
           },
           new DockPane(dockHeight, dockWidth) {
-            content = Seq(
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKMAGENTA },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKORANGE },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE }
-            )
+            content add newRectangle(Color.DARKOLIVEGREEN)
+            content add newRectangle(Color.DARKMAGENTA)
+            content add newRectangle(Color.DARKORANGE)
+            content add newRectangle(Color.DARKTURQUOISE)
+            content add newRectangle(Color.DARKOLIVEGREEN)
+            content add newRectangle(Color.DARKMAGENTA)
+            content add newRectangle(Color.DARKORANGE)
+            content add newRectangle(Color.DARKTURQUOISE)
             center = 5
           }
         )
       }
       fill = Color.BLANCHEDALMOND
+    }
+  }
+  private def newRectangle(color :jfxsp.Color) :Rectangle = {
+    new Rectangle { 
+            var paint = ObjectProperty[jfxsp.Color](color)
+            width = 150; height = 100; fill <== paint
+            onMouseClicked = (me :MouseEvent) => {paint() = paint().brighter}
     }
   }
 }

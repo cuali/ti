@@ -1,18 +1,22 @@
 package cua.li.ti.scene.layout
 
-import java.{ util => ju }
-import javafx.{ scene => jfxs }
-import jfxs.{ layout => jfxsl }
+import java.lang.Math
 import javafx.geometry.HPos
 import javafx.geometry.VPos
-import scalafx.scene.Node
-import scalafx.scene.effect.PerspectiveTransform
-import scalafx.scene.layout.HBox
-import scalafx.scene.transform.Translate
+import javafx.{ scene => jfxs }
+import jfxs.{ layout => jfxsl }
+import scalafx.Includes._
+import scalafx.beans.binding.NumberBinding
 import scalafx.beans.property.DoubleProperty
 import scalafx.beans.property.IntegerProperty
 import scalafx.beans.property.ObjectProperty
-import scalafx.beans.binding.NumberBinding
+import scalafx.scene.Node
+import scalafx.scene.effect.DropShadow
+import scalafx.scene.effect.Effect
+import scalafx.scene.effect.PerspectiveTransform
+import scalafx.scene.effect.Reflection
+import scalafx.scene.layout.HBox
+import scalafx.scene.transform.Translate
 
 /**
  * @author A@cua.li
@@ -31,8 +35,6 @@ class DockPane(override val delegate :DockPane.ExtendedHBox) extends HBox(delega
   def focus(node :Node) = delegate.focus(node)
   def indexOf(node :Node) = delegate.indexOf(node)
   def indexOf(sceneX :Double, sceneY :Double) = delegate.indexOf(sceneX, sceneY)
-    
-  //mouseTransparent = true
 }
 
 object DockPane {
@@ -40,13 +42,13 @@ object DockPane {
   val HALF_SQRT_2 = SQRT_2 / 2
   val QUARTER_SQRT_2 = SQRT_2 / 4
   val LATERAL = 3 // take care of adding or removing perspectives and translations accordingly
-  val SHRINKS = Seq(HALF_SQRT_2, QUARTER_SQRT_2, QUARTER_SQRT_2)
+  val SHRINKS = Seq(SQRT_2, QUARTER_SQRT_2, QUARTER_SQRT_2)
   class ExtendedHBox(val preferredHeight :DoubleProperty, val preferredWidth :DoubleProperty) extends jfxsl.HBox {
     this.setPrefHeight(preferredHeight())
     this.setPrefWidth(preferredWidth())
     val nodePrefWidth = DoubleProperty(0)
     val nodePrefHeight = DoubleProperty(0)
-    var perspectives :Seq[PerspectiveTransform] = Seq(
+    var perspectives :Seq[Effect] = Seq(
       new PerspectiveTransform {
         ulx = 0
         uly = 0
@@ -56,25 +58,27 @@ object DockPane {
         lry <== preferredHeight
         llx = 0
         lly <== preferredHeight
+        input = new DropShadow { radius = 6 }
       }
     )
-    var compensation = DoubleProperty(SQRT_2 - 3)
+    val compensation = DoubleProperty(SQRT_2 - 3)
     var translations :Seq[Translate] = Seq(
-      new Translate { x <== nodePrefWidth * compensation }
+      new Translate { x <== (preferredWidth - nodePrefWidth) / 2 }
     )
-    private[this] def addTransform(xShrink :Double, yMinShrink :Double, yMaxShrink :Double, xShift :Double) = {
-      val rightTranslate = new Translate { x <== nodePrefWidth * (compensation - xShift) }
-      val leftTranslate = new Translate { x <== nodePrefWidth * (compensation + xShift) }
+    private[this] def addTransform(xShrink :Double, yMinShrink :Double, yMaxShrink :Double, xShift :Double, depth :Int) = {
+      val rightTranslate = new Translate { x <== ((preferredWidth + nodePrefWidth * xShift) / 2) + spacingProperty * depth * HALF_SQRT_2 }
+      val leftTranslate = new Translate { x <== ((preferredWidth - nodePrefWidth * (2 * xShrink + xShift)) / 2) - spacingProperty * depth * HALF_SQRT_2 }
       translations = leftTranslate +: translations :+ rightTranslate
       val leftPerspective = new PerspectiveTransform {
-        ulx <== nodePrefWidth * (1 - xShrink)
+        ulx = 0
         uly <== preferredHeight * (1 - yMaxShrink) / 2
-        urx <== nodePrefWidth
+        urx <== nodePrefWidth * xShrink
         ury <== preferredHeight * (1 - yMinShrink) / 2
-        lrx <== nodePrefWidth
+        lrx <== nodePrefWidth * xShrink
         lry <== preferredHeight * (1 + yMinShrink) / 2
-        llx <== nodePrefWidth * (1 - xShrink)
+        llx = 0
         lly <== preferredHeight * (1 + yMaxShrink) / 2
+        input = new Reflection { fraction = (1 - yMaxShrink); input = new DropShadow { offsetX = -3; offsetY = -2; radius = 6 + 2 * depth } }
       }
       val rightPerspective = new PerspectiveTransform {
         urx <== nodePrefWidth * xShrink
@@ -85,12 +89,13 @@ object DockPane {
         lly <== preferredHeight * (1 + yMinShrink) / 2
         lrx <== nodePrefWidth * xShrink
         lry <== preferredHeight * (1 + yMaxShrink) / 2
-      }
+        input = new Reflection { fraction = (1 - yMaxShrink); input = new DropShadow { offsetX = 3; offsetY = -2; radius = 6 + 2 * depth } }
+    }
       perspectives = leftPerspective +: perspectives :+ rightPerspective
     }
-    addTransform(SHRINKS(0), 1, HALF_SQRT_2, 0)
-    addTransform(SHRINKS(1), HALF_SQRT_2, 0.5, 1 - SHRINKS(0))
-    addTransform(SHRINKS(2), 0.5, QUARTER_SQRT_2, 2 - SHRINKS(0) - SHRINKS(1))
+    addTransform(SHRINKS(0) / 2, 1, HALF_SQRT_2, 1, 1)
+    addTransform(SHRINKS(1) / 2, HALF_SQRT_2, 0.5, 1 + SHRINKS(0), 2)
+    addTransform(SHRINKS(2) / 2, 0.5, QUARTER_SQRT_2, 1 + SHRINKS(0) + SHRINKS(1), 3)
 
     val sides = IntegerProperty(LATERAL)
     sides onChange {
@@ -153,30 +158,25 @@ object DockPane {
       if (visibleDirty) {
         updateVisible
       }
-      setTranslateX(0)
       for (position <- (LATERAL + sides()) until LATERAL by -1) {
         prepareNode(position)
       }
       for (position <- (LATERAL - sides()) to LATERAL) {
         prepareNode(position)
       }
-      super.layoutChildren()
+      //super.layoutChildren()
     }
 
     private[this] def prepareNode(position :Int) = {
       var index = visibleContent(position)
-      if (0 > index) {
-        if (LATERAL > position) {
-          setTranslateX(getTranslateX + nodePrefWidth())
-        }
-      } else {
+      if (0 <= index) {
         val node :jfxs.Node = getChildren.get(index)
         node.setVisible(true)
         node.setCache(true)
         node.setEffect(perspectives(position))
-        node.setTranslateX(translations(position).x())
         node.setManaged(true)
-        //layoutInArea()
+        layoutInArea(node, translations(position).x(), 0, 
+            node.prefWidth(preferredHeight()), node.prefHeight(preferredWidth()), 0, HPos.CENTER, VPos.CENTER)
       }
     }
 
@@ -198,7 +198,7 @@ object DockPane {
     }
 
     def indexOf(node :Node) :Int = {
-      val managedContent = getManagedChildren
+      val managedContent = getChildren
       for (position <- (LATERAL + sides()) to (LATERAL - sides()) by -1) {
         var index = visibleContent(position)
         if (0 <= index) {
@@ -212,10 +212,10 @@ object DockPane {
 
     def indexOf(sceneX :Double, sceneY :Double) :Int = {
       val localPoint = sceneToLocal(sceneX, sceneY)
-      var bounds = this.boundsInLocalProperty.get;
+      val bounds = this.boundsInLocalProperty.get;
       if ((localPoint.getX < bounds.getWidth) && (localPoint.getY < bounds.getHeight)) {
         // FIXME calculate the effective index of the managed content at the given point
-        val managedContent = getManagedChildren
+        val managedContent = getChildren
         var index :Int = -1
         for (position <- (LATERAL + sides()) to (LATERAL - sides()) by -1) {
           index = visibleContent(position)

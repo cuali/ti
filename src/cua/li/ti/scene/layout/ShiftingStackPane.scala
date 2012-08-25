@@ -16,11 +16,12 @@ import scalafx.scene.layout.StackPane
  * @author A@cua.li
  */
 
-class ShiftingStackPane(override val delegate :jfxsl.StackPane) extends StackPane(delegate) {
+class ShiftingStackPane(override val delegate :ShiftingStackPane.ExtendedStackPane) extends StackPane(delegate) {
   def this(shiftX :Double = 10, shiftY :Double = 10) = this(new ShiftingStackPane.ExtendedStackPane(shiftX, shiftY))
 }
 object ShiftingStackPane {
   private[layout] class ExtendedStackPane(shiftX :Double, shiftY :Double) extends jfxsl.StackPane {
+    var manager :ShiftingStackPane = _
     private[this] var preferredHeight :Double = 0
     private[this] var dirtyPrefHeight = true
     override def computePrefHeight(width :Double) = {
@@ -42,13 +43,14 @@ object ShiftingStackPane {
       preferredWidth
     }
     override def layoutChildren() = {
-      val sizeOfContent = super.getManagedChildren().size
+      val sizeOfContent = super.getManagedChildren.size
       if (0 < sizeOfContent) {
-        val managedContent = super.getManagedChildren().iterator()
+        val managedContent = super.getManagedChildren.iterator
         var nodeShift = sizeOfContent - 1
         while (managedContent.hasNext) {
-          layoutInArea(managedContent.next, shiftX * nodeShift, shiftY * nodeShift,
-            preferredWidth, preferredHeight, 0, HPos.LEFT, VPos.TOP)
+          val node = managedContent.next.asInstanceOf[jfxs.Node]
+          layoutInArea(node, shiftX * nodeShift, shiftY * nodeShift,
+            node.prefWidth(preferredHeight), node.prefHeight(preferredWidth), 0, getAlignment.getHpos, getAlignment.getVpos)
           nodeShift -= 1
         }
       }

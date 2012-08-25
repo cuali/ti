@@ -3,6 +3,7 @@ package cua.li.ti.scene.gadget
 import cua.li.ti.scene.shape.RegularPolygon
 
 import java.lang.IllegalArgumentException
+import java.lang.Math
 
 import javafx.scene.{ paint => jfxsp }
 
@@ -119,6 +120,7 @@ class HexagonalColorPicker extends Pane {
           HexagonalColorPicker.this.managed = false
           HexagonalColorPicker.this.visible = false
           onClose(original, false)
+          me.consume
         }
       },
       colorName
@@ -143,16 +145,19 @@ class HexagonalColorPicker extends Pane {
       colorName.y = centralHexagon.centerY
       colorName.visible = true
       colorName.toFront()
+      me.consume
     }
     centralHexagon.onMouseExited = (me :MouseEvent) => {
       colorName.visible = false
       centralHexagon.transforms.clear
+      me.consume
     }
     centralHexagon.onMouseClicked = (me :MouseEvent) => {
       centralLabel = ""
       colorName.visible = false
       HexagonalColorPicker.this.visible = false
       onClose(chosen, !chosen.equals(original))
+      me.consume
     }
     currentHexagon = centralHexagon
     content += currentHexagon
@@ -181,15 +186,18 @@ class HexagonalColorPicker extends Pane {
         colorName.y = hexagon.centerY
         colorName.visible = true
         colorName.toFront()
+        me.consume
       }
       hexagon.onMouseExited = (me :MouseEvent) => {
         colorName.visible = false
         hexagon.transforms.clear
+        me.consume
       }
       hexagon.onMouseClicked = (me :MouseEvent) => {
         centralLabel = cell.color
         centralPaint = colorName.fill().asInstanceOf[jfxsp.Color]
         centralHexagon.fill = hexagon.fill().asInstanceOf[jfxsp.Color]
+        me.consume
       }
       content += hexagon
     }
