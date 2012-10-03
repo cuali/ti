@@ -61,7 +61,6 @@ object DockPane {
         input = new DropShadow { radius = 6 }
       }
     )
-    val compensation = DoubleProperty(SQRT_2 - 3)
     var translations :Seq[Translate] = Seq(
       new Translate { x <== (preferredWidth - nodePrefWidth) / 2 }
     )
@@ -75,10 +74,10 @@ object DockPane {
         urx <== nodePrefWidth * xShrink
         ury <== preferredHeight * (1 - yMinShrink) / 2
         lrx <== nodePrefWidth * xShrink
-        lry <== preferredHeight * (1 + yMinShrink) / 2
+        lry <== preferredHeight * (1.4 + yMinShrink) / 2
         llx = 0
-        lly <== preferredHeight * (1 + yMaxShrink) / 2
-        input = new Reflection { fraction = (1 - yMaxShrink); input = new DropShadow { offsetX = -3; offsetY = -2; radius = 6 + 2 * depth } }
+        lly <== preferredHeight * (1.4 + yMaxShrink) / 2
+        input = new Reflection { fraction = 0.2; input = new DropShadow { offsetX = -3; offsetY = -2; radius = 6 + 2 * depth } }
       }
       val rightPerspective = new PerspectiveTransform {
         urx <== nodePrefWidth * xShrink
@@ -86,10 +85,10 @@ object DockPane {
         ulx = 0
         uly <== preferredHeight * (1 - yMinShrink) / 2
         llx = 0
-        lly <== preferredHeight * (1 + yMinShrink) / 2
+        lly <== preferredHeight * (1.4 + yMinShrink) / 2
         lrx <== nodePrefWidth * xShrink
-        lry <== preferredHeight * (1 + yMaxShrink) / 2
-        input = new Reflection { fraction = (1 - yMaxShrink); input = new DropShadow { offsetX = 3; offsetY = -2; radius = 6 + 2 * depth } }
+        lry <== preferredHeight * (1.4 + yMaxShrink) / 2
+        input = new Reflection { fraction = 0.2; input = new DropShadow { offsetX = 3; offsetY = -2; radius = 6 + 2 * depth } }
     }
       perspectives = leftPerspective +: perspectives :+ rightPerspective
     }
@@ -103,10 +102,6 @@ object DockPane {
         {
           if (0 > newSides.intValue) sides() = 0
           if (LATERAL < newSides.intValue) sides() = previousSides.intValue
-          compensation() = 0
-          for (side <- 0 until sides()) {
-            compensation() += SHRINKS(side) - 1
-          }
         }
     }
     getChildren.addListener(
