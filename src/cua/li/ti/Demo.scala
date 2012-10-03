@@ -145,7 +145,7 @@ object Demo extends JFXApp {
   }
   private def newRectangle(color :jfxsp.Color) :Rectangle = {
     new Rectangle { 
-            var paint = ObjectProperty[jfxsp.Color](color)
+            val paint = ObjectProperty[jfxsp.Color](color)
             width = 150; height = 100; fill <== paint
             onMouseClicked = (me :MouseEvent) => {paint() = paint().brighter}
     }
