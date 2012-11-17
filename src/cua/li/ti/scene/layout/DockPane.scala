@@ -58,7 +58,6 @@ object DockPane {
         lry <== preferredHeight
         llx = 0
         lly <== preferredHeight
-        input = new DropShadow { radius = 6 }
       }
     )
     var translations :Seq[Translate] = Seq(
@@ -68,16 +67,17 @@ object DockPane {
       val rightTranslate = new Translate { x <== ((preferredWidth + nodePrefWidth * xShift) / 2) + spacingProperty * depth * HALF_SQRT_2 }
       val leftTranslate = new Translate { x <== ((preferredWidth - nodePrefWidth * (2 * xShrink + xShift)) / 2) - spacingProperty * depth * HALF_SQRT_2 }
       translations = leftTranslate +: translations :+ rightTranslate
+      val magic = 3 * (1 + depth)
       val leftPerspective = new PerspectiveTransform {
         ulx = 0
         uly <== preferredHeight * (1 - yMaxShrink) / 2
         urx <== nodePrefWidth * xShrink
         ury <== preferredHeight * (1 - yMinShrink) / 2
         lrx <== nodePrefWidth * xShrink
-        lry <== preferredHeight * (1.4 + yMinShrink) / 2
+        lry <== preferredHeight * (1.6 + yMinShrink) / 2
         llx = 0
-        lly <== preferredHeight * (1.4 + yMaxShrink) / 2
-        input = new Reflection { fraction = 0.2; input = new DropShadow { offsetX = -3; offsetY = -2; radius = 6 + 2 * depth } }
+        lly <== preferredHeight * (1.6 + yMaxShrink) / 2
+        input = new Reflection { fraction = 0.3; input = new DropShadow { offsetX = -magic; offsetY = 2; radius = magic } }
       }
       val rightPerspective = new PerspectiveTransform {
         urx <== nodePrefWidth * xShrink
@@ -85,11 +85,11 @@ object DockPane {
         ulx = 0
         uly <== preferredHeight * (1 - yMinShrink) / 2
         llx = 0
-        lly <== preferredHeight * (1.4 + yMinShrink) / 2
+        lly <== preferredHeight * (1.6 + yMinShrink) / 2
         lrx <== nodePrefWidth * xShrink
-        lry <== preferredHeight * (1.4 + yMaxShrink) / 2
-        input = new Reflection { fraction = 0.2; input = new DropShadow { offsetX = 3; offsetY = -2; radius = 6 + 2 * depth } }
-    }
+        lry <== preferredHeight * (1.6 + yMaxShrink) / 2
+        input = new Reflection { fraction = 0.3; input = new DropShadow { offsetX = magic; offsetY = 2; radius = magic } }
+      }
       perspectives = leftPerspective +: perspectives :+ rightPerspective
     }
     addTransform(SHRINKS(0) / 2, 1, HALF_SQRT_2, 1, 1)
@@ -145,6 +145,7 @@ object DockPane {
         node.setTranslateX(0)
         node.setVisible(false)
         node.setManaged(false)
+        node.setOpacity(1)
       }
       visibleDirty = false
     }
@@ -159,7 +160,6 @@ object DockPane {
       for (position <- (LATERAL - sides()) to LATERAL) {
         prepareNode(position)
       }
-      //super.layoutChildren()
     }
 
     private[this] def prepareNode(position :Int) = {
@@ -170,6 +170,7 @@ object DockPane {
         node.setCache(true)
         node.setEffect(perspectives(position))
         node.setManaged(true)
+        node.setOpacity(1 - (Math.abs(LATERAL - position) / (2.0 + sides())))
         layoutInArea(node, translations(position).x(), 0, 
             node.prefWidth(preferredHeight()), node.prefHeight(preferredWidth()), 0, HPos.CENTER, VPos.CENTER)
       }
