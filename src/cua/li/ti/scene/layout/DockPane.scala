@@ -41,8 +41,8 @@ object DockPane {
   val SQRT_2 = Math.sqrt(2)
   val HALF_SQRT_2 = SQRT_2 / 2
   val QUARTER_SQRT_2 = SQRT_2 / 4
-  val LATERAL = 3 // take care of adding or removing perspectives and translations accordingly
-  val SHRINKS = Seq(SQRT_2, QUARTER_SQRT_2, QUARTER_SQRT_2)
+  val LATERAL = 5 // take care of adding or removing perspectives and translations accordingly
+  val SHRINKS = Seq(SQRT_2, QUARTER_SQRT_2, QUARTER_SQRT_2, 0.5)
   class ExtendedHBox(val preferredHeight :DoubleProperty, val preferredWidth :DoubleProperty) extends jfxsl.HBox {
     this.setPrefHeight(preferredHeight())
     this.setPrefWidth(preferredWidth())
@@ -61,7 +61,7 @@ object DockPane {
       }
     )
     var translations :Seq[Translate] = Seq(
-      new Translate { x <== (preferredWidth - nodePrefWidth) / 2 }
+      new Translate { y = 2; x <== (preferredWidth - nodePrefWidth) / 2 }
     )
     private[this] def addTransform(xShrink :Double, yMinShrink :Double, yMaxShrink :Double, xShift :Double, depth :Int) = {
       val rightTranslate = new Translate { x <== ((preferredWidth + nodePrefWidth * xShift) / 2) + spacingProperty * depth * HALF_SQRT_2 }
@@ -95,6 +95,8 @@ object DockPane {
     addTransform(SHRINKS(0) / 2, 1, HALF_SQRT_2, 1, 1)
     addTransform(SHRINKS(1) / 2, HALF_SQRT_2, 0.5, 1 + SHRINKS(0), 2)
     addTransform(SHRINKS(2) / 2, 0.5, QUARTER_SQRT_2, 1 + SHRINKS(0) + SHRINKS(1), 3)
+    addTransform(SHRINKS(3) / 2, QUARTER_SQRT_2, 0.25, 1 + SHRINKS(0) + SHRINKS(1) + SHRINKS(2), 4)
+    addTransform(0.25, 0.25, 0.25, 1 + SHRINKS(0) + SHRINKS(1) + SHRINKS(2) + SHRINKS(3), 5)
 
     val sides = IntegerProperty(LATERAL)
     sides onChange {
@@ -171,7 +173,7 @@ object DockPane {
         node.setEffect(perspectives(position))
         node.setManaged(true)
         node.setOpacity(1 - (Math.abs(LATERAL - position) / (2.0 + sides())))
-        layoutInArea(node, translations(position).x(), 0, 
+        layoutInArea(node, translations(position).x(), translations(position).y(), 
             node.prefWidth(preferredHeight()), node.prefHeight(preferredWidth()), 0, HPos.CENTER, VPos.CENTER)
       }
     }
