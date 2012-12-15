@@ -34,12 +34,9 @@ class HexagonalColorPicker extends Pane {
    */
   var onClose = (color :Color, hasChanged :Boolean) => {}
   /** The chosen color when calling the <code>onClose</code> function. */
-  def chosen :Color = {
-    chosenProperty().asInstanceOf[jfxsp.Color]
-  }
-  private[this] val chosenProperty :ObjectProperty[jfxsp.Paint] = ObjectProperty(Color.TRANSPARENT)
+  private var chosen :jfxsp.Paint = jfxsp.Color.TRANSPARENT
   /** The original color is set <b>before</b> setting the <code>visible</code> attribute to <code>true</code>. */
-  var original = Color.TRANSPARENT
+  var original = jfxsp.Color.TRANSPARENT
   var centerX :Double = 50
   var centerY :Double = 120
   /** The radius may be changed after initialization at the cost of a global recomputation of polygons' vertices. */
@@ -48,7 +45,7 @@ class HexagonalColorPicker extends Pane {
   def radius_=(value :Double) {
     radiusProperty() = value
     cellRadius = value * HexagonalColorPicker.SQRT_3 / 26 // 27 would leave a border equivalent to one complete cell
-    colorName = new Text {
+    colorName = new Text("") {
       font = new Font("Consolas Bold", cellRadius * 0.707)
       wrappingWidth = cellRadius * 3.3
       translateX = cellRadius * 3.3 / -2
@@ -75,9 +72,9 @@ class HexagonalColorPicker extends Pane {
   }
   /** There are 8 complete cells on each side of the center cell, plus a "sufficient" border. */
   private[this] var cellRadius :Double = 6.66
-  private[this] var horizontalShift :Seq[Double] = Seq()
-  private[this] var verticalShift :Seq[Double] = Seq()
-  private[this] var colorName :Text = new Text
+  private[this] var horizontalShift :Seq[Double] = _
+  private[this] var verticalShift :Seq[Double] = _
+  private[this] var colorName :Text = _
   /**
    * The application has to set the <code>visible</code> attribute to <code>true</true>
    * <b>after</b> setting the <code>original</code> color.
@@ -86,7 +83,7 @@ class HexagonalColorPicker extends Pane {
     (_, oldVisible, newVisible) =>
       if (newVisible) {
         this.managed = true
-        chosenProperty() = original
+        chosen = original
         this.toFront()
       } else {
         this.managed = false
@@ -94,7 +91,7 @@ class HexagonalColorPicker extends Pane {
   }
   visible = false
   private[this] var centralLabel :String = ""
-  private[this] var centralPaint :Color = Color.BLACK
+  private[this] var centralPaint :jfxsp.Paint = _
   private[this] var centralHexagon :RegularPolygon = new RegularPolygon
   private[this] var currentHexagon :RegularPolygon = new RegularPolygon
   def computePrefWidth = 2 * radiusProperty()
@@ -133,7 +130,6 @@ class HexagonalColorPicker extends Pane {
       radius = cellRadius
       strokeWidth = 0
       stroke = Color.TRANSPARENT
-      fill <==> chosenProperty
       mouseTransparent = false
     }
     centralHexagon.onMouseEntered = (me :MouseEvent) => {
@@ -156,13 +152,13 @@ class HexagonalColorPicker extends Pane {
       centralLabel = ""
       colorName.visible = false
       HexagonalColorPicker.this.visible = false
-      onClose(chosen, !chosen.equals(original))
+      onClose(chosen.asInstanceOf[jfxsp.Color], !original.equals(chosen))
       me.consume
     }
     currentHexagon = centralHexagon
     content += currentHexagon
     for (cell <- HexagonalColorPicker.CELLS) {
-      val index = "ftyhbv".indexOf(cell.shift.toLowerCase)
+      val index = "ftyhbv".indexOf(cell.shift.toLower)
       if (0 > index) throw new IllegalArgumentException("Unknown position shift " + cell.shift)
       relPosX += horizontalShift(index)
       relPosY += verticalShift(index)
@@ -195,8 +191,9 @@ class HexagonalColorPicker extends Pane {
       }
       hexagon.onMouseClicked = (me :MouseEvent) => {
         centralLabel = cell.color
-        centralPaint = colorName.fill().asInstanceOf[jfxsp.Color]
-        centralHexagon.fill = hexagon.fill().asInstanceOf[jfxsp.Color]
+        centralPaint = colorName.fill()
+        centralHexagon.fill() = hexagon.fill()
+        chosen = hexagon.fill()
         me.consume
       }
       content += hexagon

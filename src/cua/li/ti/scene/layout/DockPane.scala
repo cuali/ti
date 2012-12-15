@@ -1,8 +1,6 @@
 package cua.li.ti.scene.layout
 
 import java.lang.Math
-import javafx.geometry.HPos
-import javafx.geometry.VPos
 import javafx.{ scene => jfxs }
 import jfxs.{ layout => jfxsl }
 import scalafx.Includes._
@@ -10,6 +8,8 @@ import scalafx.beans.binding.NumberBinding
 import scalafx.beans.property.DoubleProperty
 import scalafx.beans.property.IntegerProperty
 import scalafx.beans.property.ObjectProperty
+import scalafx.geometry.HPos
+import scalafx.geometry.VPos
 import scalafx.scene.Node
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.effect.Effect
@@ -42,7 +42,7 @@ object DockPane {
   val HALF_SQRT_2 = SQRT_2 / 2
   val QUARTER_SQRT_2 = SQRT_2 / 4
   val LATERAL = 5 // take care of adding or removing perspectives and translations accordingly
-  val SHRINKS = Seq(SQRT_2, QUARTER_SQRT_2, QUARTER_SQRT_2, 0.5)
+  val SHRINKS = Seq(SQRT_2, QUARTER_SQRT_2, QUARTER_SQRT_2, 0.5, 0.5)
   class ExtendedHBox(val preferredHeight :DoubleProperty, val preferredWidth :DoubleProperty) extends jfxsl.HBox {
     this.setPrefHeight(preferredHeight())
     this.setPrefWidth(preferredWidth())
@@ -96,7 +96,7 @@ object DockPane {
     addTransform(SHRINKS(1) / 2, HALF_SQRT_2, 0.5, 1 + SHRINKS(0), 2)
     addTransform(SHRINKS(2) / 2, 0.5, QUARTER_SQRT_2, 1 + SHRINKS(0) + SHRINKS(1), 3)
     addTransform(SHRINKS(3) / 2, QUARTER_SQRT_2, 0.25, 1 + SHRINKS(0) + SHRINKS(1) + SHRINKS(2), 4)
-    addTransform(0.25, 0.25, 0.25, 1 + SHRINKS(0) + SHRINKS(1) + SHRINKS(2) + SHRINKS(3), 5)
+    addTransform(SHRINKS(4) / 2, 0.25, QUARTER_SQRT_2 / 2, 1 + SHRINKS(0) + SHRINKS(1) + SHRINKS(2) + SHRINKS(3), 5)
 
     val sides = IntegerProperty(LATERAL)
     sides onChange {

@@ -1,8 +1,6 @@
 package cua.li.ti.scene.layout
 
 import javafx.collections.ListChangeListener
-import javafx.geometry.HPos
-import javafx.geometry.VPos
 import javafx.{ scene => jfxs }
 import jfxs.{ layout => jfxsl }
 
