@@ -113,7 +113,7 @@ object DockPane {
           val managedContent = getChildren
           referenceNode = if (0 == managedContent.size) null else managedContent.get(center())
           nodePrefWidth() = if (null == referenceNode) 0 else referenceNode.prefWidth(preferredHeight())
-          nodePrefHeight() = if (null == referenceNode) 0 else referenceNode.prefHeight(preferredWidth())
+          nodePrefHeight() = if (null == referenceNode) 0 else referenceNode.prefHeight(nodePrefWidth())
           visibleDirty = true
         }
       }
