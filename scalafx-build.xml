@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="cualiti" default="build" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+
+  <property file="scalafx-build.properties" />
+  <property name="source.dir" value="src" />
+  <property name="out.dir" value="build" />
+  <property name="out.dir.dist" value="dist" />
+  <property name="out.dir.classes" value="${out.dir}/compiled" />
+  <property name="app.jar.name" value="TI.jar" />
+
+  <target name="init">
+    <mkdir dir="${out.dir}" />
+    <mkdir dir="${out.dir.classes}" />
+    <mkdir dir="${out.dir.dist}" />
+  </target>
+
+  <target name="build" depends="init">
+    <jar destfile="${out.dir.dist}/${app.jar.name}">
+      <fileset dir="${out.dir.classes}" />
+    </jar>
+  </target>
+
+</project>
