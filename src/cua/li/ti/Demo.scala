@@ -4,7 +4,7 @@ import cua.li.ti.scene.gadget.HexagonalColorPicker
 import cua.li.ti.scene.layout.DockPane
 import cua.li.ti.scene.layout.ShiftingStackPane
 import java.lang.Math
-import javafx.scene.{ transform => jfxst , paint => jfxsp }
+import javafx.scene.{ paint => jfxsp }
 import scalafx.Includes._
 import scalafx.application.JFXApp
 import scalafx.beans.property.DoubleProperty
@@ -143,7 +143,7 @@ object Demo extends JFXApp {
       fill = Color.BLANCHEDALMOND
     }
   }
-  private def newRectangle(color :jfxsp.Color) :Rectangle = {
+  private def newRectangle(color :Color) :Rectangle = {
     new Rectangle { 
             val paint = ObjectProperty[jfxsp.Color](color)
             width = 150; height = 100; fill <== paint

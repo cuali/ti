@@ -5,8 +5,6 @@ import cua.li.ti.scene.shape.RegularPolygon
 import java.lang.IllegalArgumentException
 import java.lang.Math
 
-import javafx.scene.{ paint => jfxsp }
-
 import scalafx.Includes._
 import scalafx.beans.property.BooleanProperty
 import scalafx.beans.property.DoubleProperty
@@ -16,6 +14,7 @@ import scalafx.beans.property.StringProperty
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.Pane
 import scalafx.scene.paint.Color
+import scalafx.scene.paint.Paint
 import scalafx.scene.shape.StrokeLineJoin
 import scalafx.scene.text.Font
 import scalafx.scene.text.Text
@@ -34,9 +33,9 @@ class HexagonalColorPicker extends Pane {
    */
   var onClose = (color :Color, hasChanged :Boolean) => {}
   /** The chosen color when calling the <code>onClose</code> function. */
-  private var chosen :jfxsp.Paint = jfxsp.Color.TRANSPARENT
+  private var chosen :Color = Color.TRANSPARENT
   /** The original color is set <b>before</b> setting the <code>visible</code> attribute to <code>true</code>. */
-  var original = jfxsp.Color.TRANSPARENT
+  var original = Color.TRANSPARENT
   var centerX :Double = 50
   var centerY :Double = 120
   /** The radius may be changed after initialization at the cost of a global recomputation of polygons' vertices. */
@@ -91,7 +90,7 @@ class HexagonalColorPicker extends Pane {
   }
   visible = false
   private[this] var centralLabel :String = ""
-  private[this] var centralPaint :jfxsp.Paint = _
+  private[this] var centralPaint :Paint = _
   private[this] var centralHexagon :RegularPolygon = new RegularPolygon
   private[this] var currentHexagon :RegularPolygon = new RegularPolygon
   def computePrefWidth = 2 * radiusProperty()
@@ -152,7 +151,7 @@ class HexagonalColorPicker extends Pane {
       centralLabel = ""
       colorName.visible = false
       HexagonalColorPicker.this.visible = false
-      onClose(chosen.asInstanceOf[jfxsp.Color], !original.equals(chosen))
+      onClose(chosen, !original.equals(chosen))
       me.consume
     }
     currentHexagon = centralHexagon
@@ -168,7 +167,8 @@ class HexagonalColorPicker extends Pane {
         radius = cellRadius
         strokeWidth = 0
         stroke = Color.TRANSPARENT
-        fill = Color.web(cell.color)
+        val color = Color.web(cell.color)
+        fill = color
         mouseTransparent = false
       }
       hexagon.onMouseEntered = (me :MouseEvent) => {
@@ -192,8 +192,8 @@ class HexagonalColorPicker extends Pane {
       hexagon.onMouseClicked = (me :MouseEvent) => {
         centralLabel = cell.color
         centralPaint = colorName.fill()
-        centralHexagon.fill() = hexagon.fill()
-        chosen = hexagon.fill()
+        centralHexagon.fill() = hexagon.color
+        chosen = hexagon.color
         me.consume
       }
       content += hexagon
