@@ -6,7 +6,7 @@
   <property name="out.dir" value="build" />
   <property name="out.dir.dist" value="dist" />
   <property name="out.dir.classes" value="${out.dir}/compiled" />
-  <property name="app.jar.name" value="TI.jar" />
+  <property name="app.jar.name" value="cualiTI.jar" />
 
   <target name="init">
     <mkdir dir="${out.dir}" />
