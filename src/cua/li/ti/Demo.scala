@@ -3,8 +3,11 @@ package cua.li.ti
 import cua.li.ti.scene.gadget.HexagonalColorPicker
 import cua.li.ti.scene.layout.DockPane
 import cua.li.ti.scene.layout.ShiftingStackPane
+
 import java.lang.Math
+
 import javafx.scene.{ paint => jfxsp }
+
 import scalafx.Includes._
 import scalafx.application.JFXApp
 import scalafx.beans.property.DoubleProperty

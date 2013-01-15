@@ -34,7 +34,7 @@ class HexagonalColorPicker extends Pane {
   var onClose = (color :Color, hasChanged :Boolean) => {}
   /** The chosen color when calling the <code>onClose</code> function. */
   private var chosen :Color = Color.TRANSPARENT
-  /** The original color is set <b>before</b> setting the <code>visible</code> attribute to <code>true</code>. */
+  /** The original color has to be set <b>before</b> setting the <code>visible</code> attribute to <code>true</code>. */
   var original = Color.TRANSPARENT
   var centerX :Double = 50
   var centerY :Double = 120
