@@ -10,10 +10,9 @@ import scalafx.scene.layout.StackPane
 
 /**
  * In its current implementation this class assumes all content nodes are the same size.
- * It does NOT honor the <code>nodeHPos</code> and <code>nodeVPos</code> attributes.
+ * It does NOT consider the individual node's alignment property, but only the container's one.
  * @author A@cua.li
  */
-
 class ShiftingStackPane(override val delegate :ShiftingStackPane.ExtendedStackPane) extends StackPane(delegate) {
   def this(shiftX :Double = 10, shiftY :Double = 10) = this(new ShiftingStackPane.ExtendedStackPane(shiftX, shiftY))
 }
@@ -40,7 +39,7 @@ object ShiftingStackPane {
       }
       preferredWidth
     }
-    override def layoutChildren() = {
+    override def layoutChildren = {
       val sizeOfContent = super.getManagedChildren.size
       if (0 < sizeOfContent) {
         val managedContent = super.getManagedChildren.iterator

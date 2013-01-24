@@ -1,8 +1,10 @@
 package cua.li.ti.scene.layout
 
 import java.lang.Math
+
 import javafx.{ scene => jfxs }
 import jfxs.{ layout => jfxsl }
+
 import scalafx.Includes._
 import scalafx.beans.binding.NumberBinding
 import scalafx.beans.property.DoubleProperty
@@ -19,6 +21,8 @@ import scalafx.scene.layout.HBox
 import scalafx.scene.transform.Translate
 
 /**
+ * In its current implementation this class assumes all content nodes are the same size.
+ * It does NOT consider the individual node's alignment property, NOR the container's one.
  * @author A@cua.li
  */
 class DockPane(override val delegate :DockPane.ExtendedHBox) extends HBox(delegate) {
@@ -43,7 +47,7 @@ object DockPane {
   val QUARTER_SQRT_2 = SQRT_2 / 4
   val LATERAL = 5 // take care of adding or removing perspectives and translations accordingly
   val SHRINKS = Seq(SQRT_2, QUARTER_SQRT_2, QUARTER_SQRT_2, 0.5, 0.5)
-  class ExtendedHBox(val preferredHeight :DoubleProperty, val preferredWidth :DoubleProperty) extends jfxsl.HBox {
+  private[layout] class ExtendedHBox(val preferredHeight :DoubleProperty, val preferredWidth :DoubleProperty) extends jfxsl.HBox {
     this.setPrefHeight(preferredHeight())
     this.setPrefWidth(preferredWidth())
     val nodePrefWidth = DoubleProperty(0)
@@ -136,7 +140,7 @@ object DockPane {
     var visibleDirty = true
     var visibleContent :Seq[Int] = Seq(-1, -2, -1, -2, -1, -2, -1)
 
-    private[this] def updateVisible() = {
+    private[this] def updateVisible = {
       val sizeOfContent = getChildren.size
       visibleContent = for (i <- (center() - LATERAL) to (center() + LATERAL)) yield { if (i < sizeOfContent) { i } else { -1 } }
       val iterator = getManagedChildren.iterator
@@ -152,7 +156,7 @@ object DockPane {
       visibleDirty = false
     }
 
-    override def layoutChildren() = {
+    override def layoutChildren = {
       if (visibleDirty) {
         updateVisible
       }
