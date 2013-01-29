@@ -22,8 +22,8 @@ class ShiftingStackPane(override val delegate :ShiftingStackPane.ExtendedStackPa
 }
 object ShiftingStackPane {
   private[layout] class ExtendedStackPane(shiftX :jfxbp.DoubleProperty, shiftY :jfxbp.DoubleProperty) extends jfxsl.StackPane {
-    new DoubleProperty(shiftX) onChange { (_,_,_) => {requestLayout}}
-    new DoubleProperty(shiftY) onChange { (_,_,_) => {requestLayout}}    
+    shiftX onChange { (_,_,_) => {requestLayout}}
+    shiftY onChange { (_,_,_) => {requestLayout}}    
     var manager :ShiftingStackPane = _
     private[this] var preferredHeight :Double = 0
     private[this] var dirtyPrefHeight = true
