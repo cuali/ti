@@ -37,21 +37,24 @@ object Demo extends JFXApp {
         if (hasChanged) { stage.scene().fill = color }
       }
     }
-  stage = new Stage {
+  stage = new JFXApp.PrimaryStage {
     title = "Demo"
     scene = new Scene(3 * RADIUS, 720) {
       content = new VBox {
         val dockHeight = DoubleProperty(100)
         val dockWidth = DoubleProperty(600)
+        val shift = DoubleProperty(5)
         content = Seq(
           new StackPane {
             content = Seq(
-              new ShiftingStackPane(5, 5) {
+              new ShiftingStackPane(shift, shift) {
                 content = Seq(
                   new Rectangle { width = 300; height = 100; fill = Color.DARKORANGE },
                   new Rectangle { width = 300; height = 100; fill = Color.DARKTURQUOISE },
                   new Rectangle { width = 300; height = 100; fill = Color.DARKOLIVEGREEN }
                 )
+                onMouseEntered = (me :MouseEvent) => { shift() = 20 }
+                onMouseExited = (me :MouseEvent) => { shift() = 5 }
               },
               new Button {
                 text = "Show Hexagonal Color Picker"
