@@ -1,1 +1,7 @@
+/dist
 /build
+/nbproject
+/.settings
+/.cache
+/.classpath
+/.project

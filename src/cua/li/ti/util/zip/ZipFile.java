@@ -12,6 +12,8 @@ import java.io.OutputStream;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,11 +32,14 @@ public class ZipFile {
 	private ZipOutputStream zos;
 	private java.util.zip.ZipFile zf;
 	private final String name;
+	private final File tmpzip;
 
 	public ZipFile(final File file, final int mode) throws IOException {
 		if (OPEN_WRITE == mode) {
-			this.zos = new ZipOutputStream(new FileOutputStream(file));
+			tmpzip = File.createTempFile("tmp-",".zip");
+			this.zos = new ZipOutputStream(new FileOutputStream(tmpzip));
 		} else {
+			tmpzip = null;
 			this.zf = new java.util.zip.ZipFile(file, mode);
 		}
 		this.name = file.getPath();
@@ -112,6 +117,7 @@ public class ZipFile {
 		if (null != this.zos) {
 			this.zos.flush();
 			this.zos.close();
+			Files.move(this.tmpzip.toPath(), new File(name).toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
 		if (null != this.zf) {
 			this.zf.close();
