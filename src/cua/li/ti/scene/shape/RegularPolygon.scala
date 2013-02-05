@@ -1,5 +1,7 @@
 package cua.li.ti.scene.shape
 
+import scala.math
+
 import scalafx.Includes._
 import scalafx.beans.property.IntegerProperty
 import scalafx.beans.property.DoubleProperty
@@ -31,14 +33,14 @@ class RegularPolygon(var inicialAngle :Double = -90, var inicialSides :Int = 6)
   def angle :Double = angleProperty()
   def angle_=(value :Double) {
     angleProperty() = value
-    alpha = Math.toRadians(value)
+    alpha = math.toRadians(value)
     computePoints
   }
   private[this] val sidesProperty = IntegerProperty(inicialSides)
   def sides :Int = sidesProperty()
   def sides_=(value :Int) {
     sidesProperty() = value
-    theta = Math.toRadians(360.0 / value)
+    theta = math.toRadians(360.0 / value)
     computePoints
   }
   private[this] var theta :Double = 120
@@ -46,8 +48,8 @@ class RegularPolygon(var inicialAngle :Double = -90, var inicialSides :Int = 6)
   private[this] def computePoints {
     points.clear
     for (side <- 1 to sides) {
-      points.add(centerX + (Math.cos(alpha + theta * side) * radius))
-      points.add(centerY + (Math.sin(alpha + theta * side) * radius))
+      points.add(centerX + (math.cos(alpha + theta * side) * radius))
+      points.add(centerY + (math.sin(alpha + theta * side) * radius))
     }
   }
   angle = inicialAngle
