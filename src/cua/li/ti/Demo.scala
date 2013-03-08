@@ -2,11 +2,14 @@ package cua.li.ti
 
 import cua.li.ti.scene.gadget.HexagonalColorPicker
 import cua.li.ti.scene.layout.DockPane
+import cua.li.ti.scene.layout.FanStackPane
 import cua.li.ti.scene.layout.ShiftingStackPane
+
 
 import java.lang.Math
 
 import javafx.scene.{ paint => jfxsp }
+
 
 import scalafx.Includes._
 import scalafx.application.JFXApp
@@ -23,6 +26,8 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.transform.Translate
 import scalafx.stage.Stage
+
+
 
 /**
  * @author A@cua.li
@@ -43,6 +48,7 @@ object Demo extends JFXApp {
       content = new VBox {
         val dockHeight = DoubleProperty(100)
         val dockWidth = DoubleProperty(600)
+        val fanHeightWidth = DoubleProperty(400)
         val shift = DoubleProperty(5)
         content = Seq(
           new StackPane {
@@ -66,6 +72,16 @@ object Demo extends JFXApp {
                 }
               },
               PICKER
+            )
+          },
+          new FanStackPane(fanHeightWidth, fanHeightWidth) {
+            content = Seq(
+              new Rectangle { width = 100; height = 50; fill = Color.DARKORANGE },
+              new Rectangle { width = 80; height = 75; fill = Color.DARKOLIVEGREEN },
+              new Rectangle { width = 120; height = 150; fill = Color.DARKTURQUOISE },
+              new Rectangle { width = 90; height = 120; fill = Color.DARKOLIVEGREEN },
+              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE },
+              new Rectangle { width = 176; height = 106; fill = Color.DARKMAGENTA }
             )
           },
           new DockPane(dockHeight, dockWidth) {
@@ -156,4 +172,5 @@ object Demo extends JFXApp {
             onMouseClicked = (me :MouseEvent) => {paint() = paint().brighter}
     }
   }
+  com.javafx.experiments.scenicview.ScenicView.show(stage.scene())
 }
