@@ -1,48 +1,84 @@
 package cua.li.ti.scene.layout
 
-import javafx.collections.ListChangeListener
-import javafx.beans.{ property => jfxbp }
-import javafx.geometry.HPos
-import javafx.geometry.VPos
-import javafx.{ scene => jfxs }
-import jfxs.{ layout => jfxsl }
+import javafx.util.Duration
 
 import scalafx.Includes._
+import scalafx.animation.Animation.Status
+import scalafx.animation.Timeline
 import scalafx.beans.property.DoubleProperty
-import scalafx.scene.Node
+import scalafx.beans.property.ObjectProperty
+import scalafx.collections.ObservableBuffer
+import scalafx.collections.ObservableBuffer.Add
+import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.StackPane
+import scalafx.scene.shape.Shape
 
 /**
- * It does NOT honor the <code>nodeHPos</code> and <code>nodeVPos</code> attributes.
+ * Layout with animation on mouse enter, placing the children along the border of enclosing ellipse.
+ * It does NOT consider the individual node's alignment property, NOR the container's one.
  * @author A@cua.li
  */
-
-class FanStackPane(override val delegate :FanStackPane.ExtendedStackPane) extends StackPane(delegate) {
-  def this(preferredHeight :DoubleProperty = DoubleProperty(100), preferredWidth :DoubleProperty = DoubleProperty(100))
-  		= this(new FanStackPane.ExtendedStackPane(preferredHeight, preferredWidth))
+class FanStackPane(val preferredHeight :DoubleProperty = DoubleProperty(100),
+val preferredWidth :DoubleProperty = DoubleProperty(100)) extends StackPane {
+  minWidth <== preferredWidth
+  minHeight <== preferredHeight
+  val angle = DoubleProperty(-math.Pi / 4)
+  val initialDelay = ObjectProperty[Duration](600 ms)
+  val duration = ObjectProperty[Duration](3 s)
+  val shapes = ObservableBuffer[FanStackPane.FloatingShape]()
+  shapes onChange {
+    (_, changes) => {
+    	theta() = math.toRadians(360 / shapes.size)
+        for (change <- changes) {
+          change match {
+            case Add(_, shapes :Seq[FanStackPane.FloatingShape]) => {
+              for (shape <- shapes) {
+                shape.parentWidth <== preferredWidth
+                shape.parentHeight <== preferredHeight
+              }
+              reset
+            }
+          }
+        }
+      }
+  }
+  def reset() = {
+    for (shape <- shapes) {
+      shape.phi() = angle()
+    }
+  }
+  private val theta = DoubleProperty(0)
+  private lazy val animation = new Timeline {
+    delay <== initialDelay
+    private val initialFrames = for (shape <- shapes) yield at(0 s) {
+      shape.phi -> angle()
+    }
+    private val endFrames = for ((shape, index) <- shapes.zipWithIndex) yield at(duration()) {
+      shape.phi -> (angle() + 2 * math.Pi - index * theta())
+    }
+    keyFrames = initialFrames ++ endFrames
+  }
+  onMouseExited = (_: MouseEvent) => {
+    if (Status.RUNNING == animation.status()) {
+      animation.stop
+      reset
+    }
+  }
+  onMouseEntered = (_: MouseEvent) => {
+    if (Status.STOPPED == animation.status()) {
+      animation.playFromStart
+    }
+  }
 }
 object FanStackPane {
-  private[layout] class ExtendedStackPane(preferredHeight :jfxbp.DoubleProperty, preferredWidth :jfxbp.DoubleProperty) extends jfxsl.StackPane {
-    var manager :FanStackPane = _
-    override def computePrefHeight(width :Double) = preferredHeight.get
-    override def computePrefWidth(height :Double) = preferredWidth.get
-    override def layoutChildren() = {
-      val sizeOfContent = super.getManagedChildren.size
-      if (2 < sizeOfContent) {
-        val theta = math.toRadians(360/sizeOfContent)
-        val halfPi = - math.Pi / 2
-    	val radius = preferredHeight.get / 2
-    	val managedContent = super.getManagedChildren.iterator
-    	var nodeShift = sizeOfContent - 1
-    	while (managedContent.hasNext) {
-     	  val node = managedContent.next.asInstanceOf[jfxs.Node]
-     	  val phi = halfPi + nodeShift * theta
-     	  val posX = (radius - node.prefWidth(preferredHeight.get) / 2) * (1 + math.cos(phi))
-     	  val posY = (radius - node.prefHeight(preferredWidth.get) / 2) * (1 + math.sin(phi))
-     	  layoutInArea(node, posX, posY,
-          node.prefWidth(preferredHeight.get), node.prefHeight(preferredWidth.get), 0, HPos.CENTER, VPos.CENTER )
-          nodeShift -= 1
-        }
+  trait FloatingShape extends Shape {
+    val parentWidth = DoubleProperty(0)
+    val parentHeight = DoubleProperty(0)
+    val phi = DoubleProperty(0)
+    phi onChange {
+      (_,_,_) => {
+        translateX() = ((parentWidth() - layoutBounds().width) / 2) * (math.cos(phi()))
+        translateY() = ((parentHeight() - layoutBounds().height) / 2) * (math.sin(phi()))
       }
     }
   }

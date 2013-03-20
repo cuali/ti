@@ -2,16 +2,15 @@ package cua.li.ti
 
 import cua.li.ti.scene.gadget.HexagonalColorPicker
 import cua.li.ti.scene.layout.DockPane
+import cua.li.ti.scene.layout.EllipticalStackPane
 import cua.li.ti.scene.layout.FanStackPane
 import cua.li.ti.scene.layout.ShiftingStackPane
 
-
 import java.lang.Math
 
-import javafx.scene.{ paint => jfxsp }
-
-
 import scalafx.Includes._
+import scalafx.animation.Animation.Status
+import scalafx.animation.Timeline
 import scalafx.application.JFXApp
 import scalafx.beans.property.DoubleProperty
 import scalafx.beans.property.ObjectProperty
@@ -24,10 +23,10 @@ import scalafx.scene.layout.StackPane
 import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
+import scalafx.scene.shape.Shape
 import scalafx.scene.transform.Translate
 import scalafx.stage.Stage
-
-
+import scalafx.scene.shape.Circle
 
 /**
  * @author A@cua.li
@@ -43,11 +42,12 @@ object Demo extends JFXApp {
       }
     }
   stage = new JFXApp.PrimaryStage {
+    width = 800
     title = "Demo"
-    scene = new Scene(3 * RADIUS, 720) {
+    scene = new Scene(3 * RADIUS, 800) {
       content = new VBox {
         val dockHeight = DoubleProperty(100)
-        val dockWidth = DoubleProperty(600)
+        val dockWidth = DoubleProperty(800)
         val fanHeightWidth = DoubleProperty(400)
         val shift = DoubleProperty(5)
         content = Seq(
@@ -67,21 +67,72 @@ object Demo extends JFXApp {
                 onMouseClicked = (me :MouseEvent) => {
                   PICKER.radius = RADIUS
                   PICKER.original = Color.BLACK
-                  PICKER.managed = !PICKER.managed.get
-                  PICKER.visible = !PICKER.visible.get
+                  PICKER.managed = !PICKER.managed()
+                  PICKER.visible = !PICKER.visible()
                 }
               },
               PICKER
             )
           },
-          new FanStackPane(fanHeightWidth, fanHeightWidth) {
+          new HBox {
             content = Seq(
-              new Rectangle { width = 100; height = 50; fill = Color.DARKORANGE },
-              new Rectangle { width = 80; height = 75; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 120; height = 150; fill = Color.DARKTURQUOISE },
-              new Rectangle { width = 90; height = 120; fill = Color.DARKOLIVEGREEN },
-              new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE },
-              new Rectangle { width = 176; height = 106; fill = Color.DARKMAGENTA }
+              new EllipticalStackPane(fanHeightWidth, fanHeightWidth) {
+                content = Seq(
+                  new Rectangle { width = 100; height = 50; fill = Color.DARKORANGE },
+                  new Rectangle { width = 80; height = 75; fill = Color.DARKOLIVEGREEN },
+                  new Rectangle { width = 120; height = 150; fill = Color.DARKTURQUOISE },
+                  new Rectangle { width = 90; height = 120; fill = Color.DARKOLIVEGREEN },
+                  new Rectangle { width = 150; height = 100; fill = Color.DARKTURQUOISE },
+                  new Rectangle { width = 176; height = 106; fill = Color.DARKMAGENTA }
+                )
+              },
+              new StackPane { 
+                minWidth <== fanHeightWidth
+                minHeight <== fanHeightWidth
+                var shapes = for (i <- 1 to 9) yield new Rectangle with FloatingShape {
+                  edge <== fanHeightWidth
+                  width = 176; height = 106; fill = Color.DARKMAGENTA
+                }
+                content = shapes
+                val originAngle = - math.Pi / 4
+                val theta = math.toRadians(360 / content.size)
+                val animation = new Timeline {
+                  delay = 600 ms
+                  var index = 0
+                  keyFrames = for (shape <- shapes) yield at(3 s) {
+                    index += 1
+                    shape.phi() = originAngle
+                    shape.phi -> (originAngle + 2 * math.Pi - index * theta)
+                  }
+                }
+                onMouseExited = (_: MouseEvent) => {
+                  animation.stop
+                  for (shape <- shapes) {
+                    shape.phi() = originAngle
+                  }
+                }
+                onMouseEntered = (_: MouseEvent) => {
+	              if (Status.STOPPED == animation.status()) {
+	                animation.playFromStart
+	              }
+	            }
+                trait FloatingShape extends Shape {
+                  val edge = DoubleProperty(400)
+                  val phi = DoubleProperty(0)
+                  phi onChange {
+                    translateX() = ((edge() - layoutBounds().width) / 2) * (math.cos(phi()))
+                    translateY() = ((edge() - layoutBounds().height) / 2) * (math.sin(phi()))
+                  }
+                }
+              },
+              new FanStackPane(fanHeightWidth, fanHeightWidth) {
+                angle() = -math.Pi / 2; duration() = 6 s; initialDelay() = 900 ms
+                val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
+                  centerX = 20 * i; centerY = 20 * i; radius = 5 * i
+                }
+                shapes ++= circles
+                content = shapes
+              }
             )
           },
           new DockPane(dockHeight, dockWidth) {
@@ -150,14 +201,15 @@ object Demo extends JFXApp {
             center = 4
           },
           new DockPane(dockHeight, dockWidth) {
-            content add newRectangle(Color.DARKOLIVEGREEN)
-            content add newRectangle(Color.DARKMAGENTA)
-            content add newRectangle(Color.DARKORANGE)
-            content add newRectangle(Color.DARKTURQUOISE)
-            content add newRectangle(Color.DARKOLIVEGREEN)
-            content add newRectangle(Color.DARKMAGENTA)
-            content add newRectangle(Color.DARKORANGE)
-            content add newRectangle(Color.DARKTURQUOISE)
+            content = Seq(
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE),
+              newRectangle(Color.DARKTURQUOISE),
+              newRectangle(Color.DARKOLIVEGREEN),
+              newRectangle(Color.DARKMAGENTA),
+              newRectangle(Color.DARKORANGE)
+    		)
             center = 5
           }
         )
@@ -167,10 +219,10 @@ object Demo extends JFXApp {
   }
   private def newRectangle(color :Color) :Rectangle = {
     new Rectangle { 
-            val paint = ObjectProperty[jfxsp.Color](color)
+            val paint = ObjectProperty(color)
             width = 150; height = 100; fill <== paint
             onMouseClicked = (me :MouseEvent) => {paint() = paint().brighter}
     }
   }
-  com.javafx.experiments.scenicview.ScenicView.show(stage.scene())
+  //com.javafx.experiments.scenicview.ScenicView.show(stage.scene())
 }

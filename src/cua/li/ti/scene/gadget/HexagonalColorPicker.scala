@@ -89,6 +89,7 @@ class HexagonalColorPicker extends Pane {
       }
   }
   visible = false
+  onMouseClicked = (me :MouseEvent) => { visible = false }
   private[this] var centralLabel :String = ""
   private[this] var centralPaint :Paint = _
   private[this] var centralHexagon :RegularPolygon = new RegularPolygon
