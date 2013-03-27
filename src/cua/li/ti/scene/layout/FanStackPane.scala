@@ -9,6 +9,12 @@ import scalafx.beans.property.DoubleProperty
 import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.collections.ObservableBuffer.Add
+import scalafx.collections.ObservableBuffer.Remove
+import scalafx.geometry.BoundingBox
+import scalafx.geometry.HPos
+import scalafx.geometry.Pos
+import scalafx.geometry.VPos
+import scalafx.scene.Node
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.StackPane
 import scalafx.scene.shape.Shape
@@ -18,28 +24,32 @@ import scalafx.scene.shape.Shape
  * It does NOT consider the individual node's alignment property, NOR the container's one.
  * @author A@cua.li
  */
-class FanStackPane(val preferredHeight :DoubleProperty = DoubleProperty(100),
-val preferredWidth :DoubleProperty = DoubleProperty(100)) extends StackPane {
-  minWidth <== preferredWidth
-  minHeight <== preferredHeight
+class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectProperty(Pos.BOTTOM_LEFT),
+    val parentHeight :DoubleProperty = DoubleProperty(100),
+    val parentWidth :DoubleProperty = DoubleProperty(100)) extends StackPane {
   val angle = DoubleProperty(-math.Pi / 4)
   val initialDelay = ObjectProperty[Duration](600 ms)
   val duration = ObjectProperty[Duration](3 s)
   val shapes = ObservableBuffer[FanStackPane.FloatingShape]()
   shapes onChange {
     (_, changes) => {
-    	theta() = math.toRadians(360 / shapes.size)
+        if (0 < shapes.size) {
+          theta() = math.toRadians(360 / shapes.size)
+        }
         for (change <- changes) {
           change match {
             case Add(_, shapes :Seq[FanStackPane.FloatingShape]) => {
               for (shape <- shapes) {
-                shape.parentWidth <== preferredWidth
-                shape.parentHeight <== preferredHeight
+                shape.parentWidth <== parentWidth
+                shape.parentHeight <== parentHeight
+                shape.reference <== reference
+                shape.parentBounds <== layoutBounds
               }
-              reset
             }
+            case _ => {}
           }
         }
+        reset
       }
   }
   def reset() = {
@@ -66,20 +76,38 @@ val preferredWidth :DoubleProperty = DoubleProperty(100)) extends StackPane {
   }
   onMouseEntered = (_: MouseEvent) => {
     if (Status.STOPPED == animation.status()) {
+      toFront
       animation.playFromStart
     }
   }
 }
 object FanStackPane {
-  trait FloatingShape extends Shape {
+  trait FloatingShape extends Node {
+    val reference = ObjectProperty(Pos.BOTTOM_LEFT)
+    val parentBounds :ObjectProperty[javafx.geometry.Bounds] = ObjectProperty(new BoundingBox(0, 0, 0, 0))
     val parentWidth = DoubleProperty(0)
     val parentHeight = DoubleProperty(0)
     val phi = DoubleProperty(0)
-    phi onChange {
-      (_,_,_) => {
-        translateX() = ((parentWidth() - layoutBounds().width) / 2) * (math.cos(phi()))
-        translateY() = ((parentHeight() - layoutBounds().height) / 2) * (math.sin(phi()))
+    phi onChange { (_,_,_) => translateNode }
+    parentBounds onChange { (_,_,_) => translateNode }
+    private def translateNode() = {
+      translateX() = computeHorizontalShift + ((parentWidth() - boundsInParent().width) / 2) * (math.cos(phi()))
+      translateY() = computeVerticalShift + ((parentHeight() - boundsInParent().height) / 2) * (math.sin(phi()))
+    }
+    private def computeHorizontalShift() :Double = {
+      reference().hpos match {
+        case HPos.LEFT => parentBounds().width / 2
+        case HPos.RIGHT => -parentBounds().width / 2
+        case HPos.CENTER => 0
       }
     }
+    private def computeVerticalShift() :Double = {
+      reference().vpos match {
+        case VPos.TOP => parentBounds().height / 2
+        case VPos.BOTTOM => -parentBounds().height / 2
+        case VPos.CENTER => 0
+      }
+    }
+    // FIXME calcular os translateX/Y segundo o canto de referência da FanStackPane que inclui o nó
   }
 }
