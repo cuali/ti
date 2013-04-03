@@ -196,6 +196,12 @@ class HexagonalColorPicker extends Pane {
         centralHexagon.fill() = hexagon.color
         chosen = hexagon.color
         me.consume
+        if (1 < me.clickCount) {
+          centralLabel = ""
+          colorName.visible = false
+          HexagonalColorPicker.this.visible = false
+          onClose(chosen, !original.equals(chosen))
+        }
       }
       content += hexagon
     }
