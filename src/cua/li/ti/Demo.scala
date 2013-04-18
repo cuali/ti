@@ -5,10 +5,8 @@ import cua.li.ti.scene.layout.DockPane
 import cua.li.ti.scene.layout.EllipticalStackPane
 import cua.li.ti.scene.layout.FanStackPane
 import cua.li.ti.scene.layout.ShiftingStackPane
-
 import java.lang.Math
 import scala.collection.mutable.Seq
-
 import scalafx.Includes._
 import scalafx.animation.Animation.Status
 import scalafx.animation.Timeline
@@ -30,6 +28,7 @@ import scalafx.scene.shape.Rectangle
 import scalafx.scene.shape.Shape
 import scalafx.scene.transform.Translate
 import scalafx.stage.Stage
+import scalafx.geometry.Orientation
 
 /**
  * @author A@cua.li
@@ -135,10 +134,9 @@ object Demo extends JFXApp {
             maxHeight <== fanHeightWidth
             prefRows = 2
             prefColumns = 2
+            orientation = Orientation.HORIZONTAL
             content = Seq(
-              new FanStackPane(ObjectProperty(Pos.TOP_LEFT), fanHeightWidth, fanHeightWidth) {
-                minWidth <== fanHeightWidth / 2
-                minHeight <== fanHeightWidth / 2
+              new FanStackPane(ObjectProperty(Pos.TOP_LEFT), padding, fanHeightWidth, fanHeightWidth) {
   				angle() = -3 * math.Pi / 4; duration() = 6 s; initialDelay() = 900 ms
                 val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
                   centerX = 20 * i; centerY = 20 * i; radius = 5 * i
@@ -147,9 +145,7 @@ object Demo extends JFXApp {
                 shapes ++= circles
                 content = shapes
               },
-              new FanStackPane(ObjectProperty(Pos.TOP_RIGHT), fanHeightWidth, fanHeightWidth) {
-                minWidth <== fanHeightWidth / 2
-                minHeight <== fanHeightWidth / 2
+              new FanStackPane(ObjectProperty(Pos.TOP_RIGHT), padding, fanHeightWidth, fanHeightWidth) {
   				angle() = -math.Pi / 4; duration() = 6 s; initialDelay() = 900 ms
                 val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
                   centerX = 20 * i; centerY = 20 * i; radius = 5 * i
@@ -158,9 +154,7 @@ object Demo extends JFXApp {
                 shapes ++= circles
                 content = shapes
               },
-              new FanStackPane(ObjectProperty(Pos.BOTTOM_LEFT), fanHeightWidth, fanHeightWidth) {
-                minWidth <== fanHeightWidth / 2
-                minHeight <== fanHeightWidth / 2
+              new FanStackPane(ObjectProperty(Pos.BOTTOM_LEFT), padding, fanHeightWidth, fanHeightWidth) {
   				angle() = 3 * math.Pi / 4; duration() = 6 s; initialDelay() = 900 ms
                 val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
                   centerX = 20 * i; centerY = 20 * i; radius = 5 * i
@@ -169,9 +163,7 @@ object Demo extends JFXApp {
                 shapes ++= circles
                 content = shapes
               },
-              new FanStackPane(ObjectProperty(Pos.BOTTOM_RIGHT), fanHeightWidth, fanHeightWidth) {
-                minWidth <== fanHeightWidth / 2
-                minHeight <== fanHeightWidth / 2
+              new FanStackPane(ObjectProperty(Pos.BOTTOM_RIGHT), padding, fanHeightWidth, fanHeightWidth) {
   				angle() = math.Pi / 4; duration() = 6 s; initialDelay() = 900 ms
                 val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
                   centerX = 20 * i; centerY = 20 * i; radius = 5 * i

@@ -1,7 +1,6 @@
 package cua.li.ti.scene.layout
 
 import javafx.util.Duration
-
 import scalafx.Includes._
 import scalafx.animation.Animation.Status
 import scalafx.animation.Timeline
@@ -18,6 +17,7 @@ import scalafx.scene.Node
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.StackPane
 import scalafx.scene.shape.Shape
+import scalafx.geometry.Insets
 
 /**
  * Layout with animation on mouse enter, placing the children along the border of enclosing ellipse.
@@ -25,6 +25,7 @@ import scalafx.scene.shape.Shape
  * @author A@cua.li
  */
 class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectProperty(Pos.BOTTOM_LEFT),
+    val parentPadding :ObjectProperty[javafx.geometry.Insets] = ObjectProperty(Insets(0,0,0,0)),
     val parentHeight :DoubleProperty = DoubleProperty(100),
     val parentWidth :DoubleProperty = DoubleProperty(100)) extends StackPane {
   val angle = DoubleProperty(-math.Pi / 4)
@@ -40,6 +41,7 @@ class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectPr
           change match {
             case Add(_, shapes :Seq[FanStackPane.FloatingShape]) => {
               for (shape <- shapes) {
+                shape.padding <== parentPadding
                 shape.parentWidth <== parentWidth
                 shape.parentHeight <== parentHeight
                 shape.reference <== reference
@@ -52,6 +54,8 @@ class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectPr
         reset
       }
   }
+  minWidth <== parentWidth / 2
+  minHeight <== parentHeight / 2
   def reset() = {
     for (shape <- shapes) {
       shape.phi() = angle()
@@ -83,6 +87,7 @@ class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectPr
 }
 object FanStackPane {
   trait FloatingShape extends Node {
+    val padding = ObjectProperty(Insets(0,0,0,0))
     val reference = ObjectProperty(Pos.BOTTOM_LEFT)
     val parentBounds :ObjectProperty[javafx.geometry.Bounds] = ObjectProperty(new BoundingBox(0, 0, 0, 0))
     val parentWidth = DoubleProperty(0)
@@ -96,18 +101,17 @@ object FanStackPane {
     }
     private def computeHorizontalShift() :Double = {
       reference().hpos match {
-        case HPos.LEFT => parentBounds().width / 2
-        case HPos.RIGHT => -parentBounds().width / 2
+        case HPos.LEFT => (padding().left - padding().right + parentBounds().width) / 2
+        case HPos.RIGHT => (padding().left - padding().right - parentBounds().width) / 2
         case HPos.CENTER => 0
       }
     }
     private def computeVerticalShift() :Double = {
       reference().vpos match {
-        case VPos.TOP => parentBounds().height / 2
-        case VPos.BOTTOM => -parentBounds().height / 2
+        case VPos.TOP => (padding().top - padding().bottom + parentBounds().height) / 2
+        case VPos.BOTTOM => (padding().top - padding().bottom - parentBounds().height) / 2
         case VPos.CENTER => 0
       }
     }
-    // FIXME calcular os translateX/Y segundo o canto de referência da FanStackPane que inclui o nó
   }
 }
