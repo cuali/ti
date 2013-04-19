@@ -1,6 +1,9 @@
 package cua.li.ti.scene.layout
 
 import javafx.util.Duration
+
+import scala.collection.JavaConversions._
+
 import scalafx.Includes._
 import scalafx.animation.Animation.Status
 import scalafx.animation.Timeline
@@ -9,15 +12,16 @@ import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.collections.ObservableBuffer.Add
 import scalafx.collections.ObservableBuffer.Remove
+import scalafx.collections.ObservableBuffer.Reorder
 import scalafx.geometry.BoundingBox
 import scalafx.geometry.HPos
+import scalafx.geometry.Insets
 import scalafx.geometry.Pos
 import scalafx.geometry.VPos
 import scalafx.scene.Node
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.StackPane
 import scalafx.scene.shape.Shape
-import scalafx.geometry.Insets
 
 /**
  * Layout with animation on mouse enter, placing the children along the border of enclosing ellipse.
@@ -34,32 +38,37 @@ class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectPr
   val shapes = ObservableBuffer[FanStackPane.FloatingShape]()
   shapes onChange {
     (_, changes) => {
-        if (0 < shapes.size) {
-          theta() = math.toRadians(360 / shapes.size)
-        }
         for (change <- changes) {
           change match {
-            case Add(_, shapes :Seq[FanStackPane.FloatingShape]) => {
+            case Add(position :Int, shapes :Seq[FanStackPane.FloatingShape]) => {
               for (shape <- shapes) {
                 shape.padding <== parentPadding
                 shape.parentWidth <== parentWidth
                 shape.parentHeight <== parentHeight
                 shape.reference <== reference
                 shape.parentBounds <== layoutBounds
+                shape.phi() = angle()
               }
+              this.content.insertAll(position, shapes.map(_.delegate))
             }
-            case _ => {}
+            case Remove(position :Int, shapes :Seq[FanStackPane.FloatingShape]) => {
+              this.content.removeAll(shapes.map(_.delegate))
+            }
+            case Reorder(_,_,_) => { /* TODO */ }
           }
         }
-        reset
       }
   }
   minWidth <== parentWidth / 2
   minHeight <== parentHeight / 2
+  angle onChange { reset }
   def reset() = {
     for (shape <- shapes) {
       shape.phi() = angle()
     }
+    theta() = if (1 > shapes.size) 0 else {
+      math.toRadians(360 / shapes.size)
+    } 
   }
   private val theta = DoubleProperty(0)
   private lazy val animation = new Timeline {
@@ -80,6 +89,7 @@ class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectPr
   }
   onMouseEntered = (_: MouseEvent) => {
     if (Status.STOPPED == animation.status()) {
+      reset
       toFront
       animation.playFromStart
     }
@@ -87,29 +97,33 @@ class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectPr
 }
 object FanStackPane {
   trait FloatingShape extends Node {
-    val padding = ObjectProperty(Insets(0,0,0,0))
-    val reference = ObjectProperty(Pos.BOTTOM_LEFT)
-    val parentBounds :ObjectProperty[javafx.geometry.Bounds] = ObjectProperty(new BoundingBox(0, 0, 0, 0))
-    val parentWidth = DoubleProperty(0)
-    val parentHeight = DoubleProperty(0)
-    val phi = DoubleProperty(0)
-    phi onChange { (_,_,_) => translateNode }
-    parentBounds onChange { (_,_,_) => translateNode }
+    private[layout] val padding = ObjectProperty(Insets(0,0,0,0))
+    private[layout] val reference = ObjectProperty(Pos.BOTTOM_LEFT)
+    private[layout] val parentBounds :ObjectProperty[javafx.geometry.Bounds] = ObjectProperty(new BoundingBox(0, 0, 0, 0))
+    private[layout] val parentWidth = DoubleProperty(0)
+    private[layout] val parentHeight = DoubleProperty(0)
+    private[layout] val phi = DoubleProperty(0)
+    private[layout] val horizontalShift = DoubleProperty(0)
+    private[layout] val verticalShift = DoubleProperty(0)
+    phi onChange { translateNode }
+    horizontalShift onChange { translateNode }
+    verticalShift onChange { translateNode }
     private def translateNode() = {
-      translateX() = computeHorizontalShift + ((parentWidth() - boundsInParent().width) / 2) * (math.cos(phi()))
-      translateY() = computeVerticalShift + ((parentHeight() - boundsInParent().height) / 2) * (math.sin(phi()))
+      translateX() = horizontalShift() + ((parentWidth() - boundsInParent().width) / 2) * (math.cos(phi()))
+      translateY() = verticalShift() + ((parentHeight() - boundsInParent().height) / 2) * (math.sin(phi()))
     }
-    private def computeHorizontalShift() :Double = {
-      reference().hpos match {
-        case HPos.LEFT => (padding().left - padding().right + parentBounds().width) / 2
-        case HPos.RIGHT => (padding().left - padding().right - parentBounds().width) / 2
+    padding onChange { computeShifts }
+    parentBounds onChange { computeShifts }
+    reference onChange { computeShifts }
+    private def computeShifts() {
+      horizontalShift() = reference().hpos match {
+        case HPos.LEFT => (padding().left - padding().right + parentBounds().width) / 2.0
+        case HPos.RIGHT => (padding().right - padding().left - parentBounds().width) / 2.0
         case HPos.CENTER => 0
       }
-    }
-    private def computeVerticalShift() :Double = {
-      reference().vpos match {
+      verticalShift() = reference().vpos match {
         case VPos.TOP => (padding().top - padding().bottom + parentBounds().height) / 2
-        case VPos.BOTTOM => (padding().top - padding().bottom - parentBounds().height) / 2
+        case VPos.BOTTOM => (padding().bottom - padding().top - parentBounds().height) / 2
         case VPos.CENTER => 0
       }
     }

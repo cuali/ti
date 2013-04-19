@@ -137,40 +137,40 @@ object Demo extends JFXApp {
             orientation = Orientation.HORIZONTAL
             content = Seq(
               new FanStackPane(ObjectProperty(Pos.TOP_LEFT), padding, fanHeightWidth, fanHeightWidth) {
-  				angle() = -3 * math.Pi / 4; duration() = 6 s; initialDelay() = 900 ms
+                angle() = -3 * math.Pi / 4; duration() = 6 s; initialDelay() = 800 ms
                 val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
                   centerX = 20 * i; centerY = 20 * i; radius = 5 * i
                   fill = Color.DARKMAGENTA
                 }
                 shapes ++= circles
-                content = shapes
+                reset
               },
               new FanStackPane(ObjectProperty(Pos.TOP_RIGHT), padding, fanHeightWidth, fanHeightWidth) {
-  				angle() = -math.Pi / 4; duration() = 6 s; initialDelay() = 900 ms
+                angle() = -math.Pi / 4; duration() = 6 s; initialDelay() = 700 ms
                 val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
                   centerX = 20 * i; centerY = 20 * i; radius = 5 * i
                   fill = Color.DARKTURQUOISE
                 }
                 shapes ++= circles
-                content = shapes
+                reset
               },
               new FanStackPane(ObjectProperty(Pos.BOTTOM_LEFT), padding, fanHeightWidth, fanHeightWidth) {
-  				angle() = 3 * math.Pi / 4; duration() = 6 s; initialDelay() = 900 ms
+                angle() = 3 * math.Pi / 4; duration() = 6 s; initialDelay() = 600 ms
                 val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
                   centerX = 20 * i; centerY = 20 * i; radius = 5 * i
                   fill = Color.DARKORANGE
                 }
                 shapes ++= circles
-                content = shapes
+                reset
               },
               new FanStackPane(ObjectProperty(Pos.BOTTOM_RIGHT), padding, fanHeightWidth, fanHeightWidth) {
-  				angle() = math.Pi / 4; duration() = 6 s; initialDelay() = 900 ms
+                angle() = math.Pi / 4; duration() = 6 s; initialDelay() = 500 ms
                 val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
                   centerX = 20 * i; centerY = 20 * i; radius = 5 * i
                   fill = Color.DARKOLIVEGREEN
                 }
                 shapes ++= circles
-                content = shapes
+                reset
               }
             )
           },
