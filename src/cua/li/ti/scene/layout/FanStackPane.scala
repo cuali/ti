@@ -28,19 +28,19 @@ import scalafx.scene.shape.Shape
  * It does NOT consider the individual node's alignment property, NOR the container's one.
  * @author A@cua.li
  */
-class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectProperty(Pos.BOTTOM_LEFT),
+class FanStackPane[FS <: FanStackPane.FloatingShape](val reference :ObjectProperty[javafx.geometry.Pos] = ObjectProperty(Pos.BOTTOM_LEFT),
     val parentPadding :ObjectProperty[javafx.geometry.Insets] = ObjectProperty(Insets(0,0,0,0)),
     val parentHeight :DoubleProperty = DoubleProperty(100),
     val parentWidth :DoubleProperty = DoubleProperty(100)) extends StackPane {
   val angle = DoubleProperty(-math.Pi / 4)
-  val initialDelay = ObjectProperty[Duration](600 ms)
+  val initialDelay = ObjectProperty[Duration](1600 ms)
   val duration = ObjectProperty[Duration](3 s)
-  val shapes = ObservableBuffer[FanStackPane.FloatingShape]()
+  val shapes = ObservableBuffer[FS]()
   shapes onChange {
     (_, changes) => {
         for (change <- changes) {
           change match {
-            case Add(position :Int, shapes :Seq[FanStackPane.FloatingShape]) => {
+            case Add(position :Int, shapes :Seq[FS]) => {
               for (shape <- shapes) {
                 shape.padding <== parentPadding
                 shape.parentWidth <== parentWidth
@@ -51,16 +51,14 @@ class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectPr
               }
               this.content.insertAll(position, shapes.map(_.delegate))
             }
-            case Remove(position :Int, shapes :Seq[FanStackPane.FloatingShape]) => {
-              this.content.removeAll(shapes.map(_.delegate))
+            case Remove(position :Int, shapes :Seq[FS]) => {
+              this.content.remove(position, shapes.length)
             }
             case Reorder(_,_,_) => { /* TODO */ }
           }
         }
       }
   }
-  minWidth <== parentWidth / 2
-  minHeight <== parentHeight / 2
   angle onChange { reset }
   def reset() = {
     for (shape <- shapes) {
@@ -81,13 +79,13 @@ class FanStackPane(val reference :ObjectProperty[javafx.geometry.Pos] = ObjectPr
     }
     keyFrames = initialFrames ++ endFrames
   }
-  onMouseExited = (_: MouseEvent) => {
+  onMouseExited = { (me :MouseEvent) =>
     if (Status.RUNNING == animation.status()) {
       animation.stop
       reset
     }
   }
-  onMouseEntered = (_: MouseEvent) => {
+  onMouseEntered = { (me :MouseEvent) =>
     if (Status.STOPPED == animation.status()) {
       reset
       toFront
@@ -109,8 +107,8 @@ object FanStackPane {
     horizontalShift onChange { translateNode }
     verticalShift onChange { translateNode }
     private def translateNode() = {
-      translateX() = horizontalShift() + ((parentWidth() - boundsInParent().width) / 2) * (math.cos(phi()))
-      translateY() = verticalShift() + ((parentHeight() - boundsInParent().height) / 2) * (math.sin(phi()))
+      translateX() = horizontalShift() + ((parentWidth() - layoutBounds().width) / 2) * (math.cos(phi()))
+      translateY() = verticalShift() + ((parentHeight() - layoutBounds().height) / 2) * (math.sin(phi()))
     }
     padding onChange { computeShifts }
     parentBounds onChange { computeShifts }

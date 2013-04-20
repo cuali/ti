@@ -46,7 +46,7 @@ object Demo extends JFXApp {
   stage = new JFXApp.PrimaryStage {
     width = 800
     title = "Demo"
-    scene = new Scene(3 * RADIUS, 800) {
+    scene = new Scene(4 * RADIUS, 800) {
       content = new VBox {
         val dockHeight = DoubleProperty(100)
         val dockWidth = DoubleProperty(800)
@@ -136,42 +136,10 @@ object Demo extends JFXApp {
             prefColumns = 2
             orientation = Orientation.HORIZONTAL
             content = Seq(
-              new FanStackPane(ObjectProperty(Pos.TOP_LEFT), padding, fanHeightWidth, fanHeightWidth) {
-                angle() = -3 * math.Pi / 4; duration() = 6 s; initialDelay() = 800 ms
-                val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
-                  centerX = 20 * i; centerY = 20 * i; radius = 5 * i
-                  fill = Color.DARKMAGENTA
-                }
-                shapes ++= circles
-                reset
-              },
-              new FanStackPane(ObjectProperty(Pos.TOP_RIGHT), padding, fanHeightWidth, fanHeightWidth) {
-                angle() = -math.Pi / 4; duration() = 6 s; initialDelay() = 700 ms
-                val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
-                  centerX = 20 * i; centerY = 20 * i; radius = 5 * i
-                  fill = Color.DARKTURQUOISE
-                }
-                shapes ++= circles
-                reset
-              },
-              new FanStackPane(ObjectProperty(Pos.BOTTOM_LEFT), padding, fanHeightWidth, fanHeightWidth) {
-                angle() = 3 * math.Pi / 4; duration() = 6 s; initialDelay() = 600 ms
-                val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
-                  centerX = 20 * i; centerY = 20 * i; radius = 5 * i
-                  fill = Color.DARKORANGE
-                }
-                shapes ++= circles
-                reset
-              },
-              new FanStackPane(ObjectProperty(Pos.BOTTOM_RIGHT), padding, fanHeightWidth, fanHeightWidth) {
-                angle() = math.Pi / 4; duration() = 6 s; initialDelay() = 500 ms
-                val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
-                  centerX = 20 * i; centerY = 20 * i; radius = 5 * i
-                  fill = Color.DARKOLIVEGREEN
-                }
-                shapes ++= circles
-                reset
-              }
+              newFanPane(Color.DARKMAGENTA, -3 * math.Pi / 4, Pos.TOP_LEFT, padding, fanHeightWidth),
+              newFanPane(Color.DARKTURQUOISE, -math.Pi / 4, Pos.TOP_RIGHT, padding, fanHeightWidth),
+              newFanPane(Color.DARKORANGE, 3 * math.Pi / 4, Pos.BOTTOM_LEFT, padding, fanHeightWidth),
+              newFanPane(Color.DARKOLIVEGREEN, math.Pi / 4, Pos.BOTTOM_RIGHT, padding, fanHeightWidth)
             )
           },
           new DockPane(dockHeight, dockWidth) {
@@ -263,5 +231,22 @@ object Demo extends JFXApp {
             onMouseClicked = (me :MouseEvent) => {paint() = paint().brighter}
     }
   }
-  //com.javafx.experiments.scenicview.ScenicView.show(stage.scene())
+  private def newFanPane(color: Color, initial :Double, reference: Pos,
+      padding: ObjectProperty[javafx.geometry.Insets], fanHeightWidth: DoubleProperty) :FanStackPane[Circle with FanStackPane.FloatingShape] = {
+    new FanStackPane[Circle with FanStackPane.FloatingShape](ObjectProperty(reference), padding, fanHeightWidth, fanHeightWidth) {
+      angle() = initial; duration() = 6 s; initialDelay() = 800 ms
+      val circles = for (i <- 1 to 8) yield new Circle with FanStackPane.FloatingShape {
+        centerX = 20 * i; centerY = 20 * i; radius = 5 * i
+        fill = color
+        onMouseClicked = {
+          toFront
+        }
+      }
+      shapes ++= circles
+      minWidth <== parentWidth / 2
+      minHeight <== parentHeight / 2
+      reset
+    }
+  }
+  com.javafx.experiments.scenicview.ScenicView.show(stage.scene())
 }
