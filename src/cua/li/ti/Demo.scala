@@ -248,5 +248,5 @@ object Demo extends JFXApp {
       reset
     }
   }
-  com.javafx.experiments.scenicview.ScenicView.show(stage.scene())
+  //com.javafx.experiments.scenicview.ScenicView.show(stage.scene())
 }

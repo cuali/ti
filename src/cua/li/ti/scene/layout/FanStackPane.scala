@@ -79,19 +79,21 @@ class FanStackPane[FS <: FanStackPane.FloatingShape](val reference :ObjectProper
     }
     keyFrames = initialFrames ++ endFrames
   }
-  onMouseExited = { (me :MouseEvent) =>
+  protected def stopAnimation() {
     if (Status.RUNNING == animation.status()) {
       animation.stop
       reset
     }
   }
-  onMouseEntered = { (me :MouseEvent) =>
+  protected def startAnimation() {
     if (Status.STOPPED == animation.status()) {
       reset
       toFront
       animation.playFromStart
     }
   }
+  onMouseExited = { (me :MouseEvent) => stopAnimation }
+  onMouseEntered = { (me :MouseEvent) => startAnimation }
 }
 object FanStackPane {
   trait FloatingShape extends Node {
