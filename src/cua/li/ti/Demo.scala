@@ -114,10 +114,10 @@ object Demo extends JFXApp {
                   }
                 }
                 onMouseEntered = (_: MouseEvent) => {
-	              if (Status.STOPPED == animation.status()) {
-	                animation.playFromStart
-	              }
-	            }
+                  if (Status.STOPPED == animation.status()) {
+                    animation.playFromStart
+                  }
+                }
                 trait FloatingShape extends Shape {
                   val edge = DoubleProperty(400)
                   val phi = DoubleProperty(0)
@@ -216,7 +216,7 @@ object Demo extends JFXApp {
               newRectangle(Color.DARKOLIVEGREEN),
               newRectangle(Color.DARKMAGENTA),
               newRectangle(Color.DARKORANGE)
-    		)
+            )
             center = 5
           }
         )
@@ -226,9 +226,9 @@ object Demo extends JFXApp {
   }
   private def newRectangle(color :Color) :Rectangle = {
     new Rectangle { 
-            val paint = ObjectProperty(color)
-            width = 150; height = 100; fill <== paint
-            onMouseClicked = (me :MouseEvent) => {paint() = paint().brighter}
+      val paint = ObjectProperty(color)
+      width = 150; height = 100; fill <== paint
+      onMouseClicked = (me :MouseEvent) => {paint() = paint().brighter}
     }
   }
   private def newFanPane(color: Color, initial :Double, reference: Pos,
