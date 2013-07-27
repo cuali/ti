@@ -1,25 +1,28 @@
 
-# TI (_Technologies de l'Intelligence_ ou **Tecnologias da Inteligência**)
+# TI
 
 Este repositório está dedicado para compartilhar componentes de 
-**TI** (_Technologies de l'Intelligence_ ou **Tecnologias da Inteligência**) 
+***TI*** (*Technologies de l'Intelligence* ou **Tecnologias da Inteligência**) 
 desenvolvidos para nossas aplicações.
 
 ## componentes existentes
 
 #### utilitário Java
 
-  So you have lost your class? Find it back with: `java -jar [whereis.jar](http://cua.li/TI/whereis.jar) MyClass /in/MyApps`
+  So you have lost your class? Find it back with: 
+ ```bash
+ java -jar whereis.jar MyClass /in/MyApps
+ ```
   
-  As this tool is making use of the temporary directory to expand the embedded archives, you may have to change the `java.io.tmpdir` property to a directory you have write permissions to.
+  As [this tool](http://cua.li/TI/whereis.jar) is making use of the temporary directory to expand the embedded archives, you may have to change the `java.io.tmpdir` property to a directory you have write permissions to.
 
 ```bash
-java -Djava.io.tmpdir=D:\tmp -jar [whereis.jar](http://cua.li/TI/whereis.jar) SAXParserFactory D:\JBoss
+java -Djava.io.tmpdir=D:\tmp -jar whereis.jar SAXParserFactory D:\JBoss
 ```
   
   More explanations on [cua.li/TI](http://cua.li/TI/whereIsMyClass.html)'s site.
 
-#### componentes ScalaFX
+#### componentes [ScalaFX](http://code.google.com/p/scalafx/)
 
 para uma interface gráfica mais orientada à manipulação direta
 
@@ -37,7 +40,7 @@ para dar suporte aos componentes gráficos
 
 ## componentes planejados
 
-#### componentes ScalaFX
+#### componentes [ScalaFX](http://code.google.com/p/scalafx/)
 
   + escolher uma cor entre 1068 em células triangulares organizadas por nuances
     (inspirado em [VisiBone](http://www.VisiBone.com/color/kilochart.html) de Bob Stein)
